@@ -1,0 +1,82 @@
+---
+title: "Credit Scoring Classification Analysis"
+author: "Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627"
+date: today
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    toc-title: Contents
+    toc-location: left
+    theme: solar
+    fontsize: 1.1em
+    linestretch: 1.7
+execute:
+  echo: fenced
+title-block-banner: true 
+code-fold: false
+linkcolor: white;
+keep-md: true
+---
+
+## Introduction
+
+In this project we applied 3 machine learning classification algorithms to build model to predict Credit scores. The dataset we used for this project is Credit scoring dataset from [kaggle](https://www.kaggle.com/datasets/parisrohan/credit-score-classification).
+
+### Importing Neccessary Libraries
+
+Following libraries are used for this project
+```{python}
+import pandas as pd
+import re
+import numpy as np
+from sklearn import preprocessing
+from sklearn.preprocessing import scale
+import os
+```
+
+### Dataset
+
+Initial dimension of the data had 100'000 rows and 28 variables. After removing some unique identification variables we are going to work on are:
+
+-   "Month" - Month of the year
+-   "Age" - Age of the person, We limited it into 14+56
+-   "Occupation" - Occupation of the person, 16 factor
+-   "Annual_Income" - Annual income of the person, continuous variable
+-   "Monthly_Inhand_Salary" - Monthly salary, continuous variable
+-   "Num_Bank_Accounts" - Num of bank accounts the person holds
+-   "Num_Credit_Card" - Num of credit card the person holds
+-   "Interest_Rate" - Interest rate on credit card
+-   "Num_of_Loan" - Num of loans from the bank
+-   "Type_of_Loan" - Type of loan
+-   "Delay_from_due_date" - Average number of days delayed from the payment date
+-   "Num_of_Delayed_Payment" - Average number of payments delayed by a person
+-   "Changed_Credit_Limit" - Percentage change in credit card limit
+-   "Num_Credit_Inquiries" - number of credit card inquiries
+-   "Credit_Mix" - Classification of the mix of credits
+-   "Outstanding_Debt" - remaining debt to be paid (in USD)
+-   "Credit_Utilization_Ratio" - utilization ratio of credit card
+-   "Credit_History_Age" - age of credit history of the person
+-   "Payment_of_Min_Amount" - whether only the minimum amount was paid by the person
+-   "Total_EMI_per_month" - monthly EMI payments (in USD)
+-   "Amount_invested_monthly" - monthly amount invested by the customer (in USD)
+-   "Payment_Behaviour" - payment behavior of the customer
+-   "Monthly_Balance" - monthly balance amount of the customer (in USD)
+-   "Credit_Score" - bracket of credit score (Poor, Standard, Good)
+
+Our target variable Credit_Score has 3 classes, but we only took **"Poor"** and **"Good"** categories to further analysis.
+
+```{python}
+credit_score=pd.read_csv('train.csv', )
+```
+```{python}
+credit_score.head()
+```
+
+
+
+
+### Data Preprocessing
+
+We prepared the data set for further analysis step by removing rows with missing values, transforming character variables into categorical/factor variables, and numeric variables and standardized it and removing outliers.
+
