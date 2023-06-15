@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627">
-<meta name="dcterms.date" content="2023-06-11">
+<meta name="dcterms.date" content="2023-06-12">
 
 <title>Credit Scoring Classification Analysis</title>
 <style>
@@ -65,10 +65,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="RRproj_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="RRproj_files/libs/quarto-html/anchor.min.js"></script>
 <link href="RRproj_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="RRproj_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="RRproj_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="RRproj_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="RRproj_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="RRproj_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="RRproj_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
@@ -98,7 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 11, 2023</p>
+        <p class="date">June 12, 2023</p>
       </div>
     </div>
     
@@ -118,6 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
   <li><a href="#data-preprocessing" id="toc-data-preprocessing" class="nav-link" data-scroll-target="#data-preprocessing">Data Preprocessing</a></li>
   </ul></li>
+  <li><a href="#data-exploration-feature-selection" id="toc-data-exploration-feature-selection" class="nav-link" data-scroll-target="#data-exploration-feature-selection">Data Exploration &amp; Feature Selection</a></li>
   </ul>
 </nav>
 </div>
@@ -135,6 +136,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="importing-neccessary-libraries">Importing Neccessary Libraries</h3>
 <p>Following libraries are used for this project</p>
 <div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
@@ -142,7 +145,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> preprocessing</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> scale</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="dataset" class="level3">
@@ -176,22 +182,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Our target variable Credit_Score has 3 classes, but we only took <strong>“Poor”</strong> and <strong>“Good”</strong> categories to further analysis.</p>
 <div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>os.getcwd()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>credit_score<span class="op">=</span>pd.read_csv(<span class="st">'train.csv'</span>, )</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/6h/yr9vftfx0xv6rz2_sdjvz1180000gn/T/ipykernel_33209/513257851.py:2: DtypeWarning:
-
-Columns (26) have mixed types. Specify dtype option on import or set low_memory=False.
-</code></pre>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>os.getcwd()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>credit_score<span class="op">=</span>pd.read_csv(<span class="st">'train.csv'</span>, )</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(credit_score.shape)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>credit_score.head()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(100000, 28)</code></pre>
 </div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>credit_score.head()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="62">
 <div>
 
 
@@ -354,35 +358,112 @@ Columns (26) have mixed types. Specify dtype option on import or set low_memory=
 <section id="data-preprocessing" class="level3">
 <h3 class="anchored" data-anchor-id="data-preprocessing">Data Preprocessing</h3>
 <p>We prepared the data set for further analysis step by removing rows with missing values, transforming character variables into categorical/factor variables, and numeric variables and standardized it and removing outliers.</p>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>credit_score.drop([<span class="st">'ID'</span>,<span class="st">'Customer_ID'</span>,<span class="st">'Name'</span>,<span class="st">'SSN'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data.dropna(axis<span class="op">=</span><span class="dv">0</span>, how<span class="op">=</span><span class="st">'any'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"Month"</span>] <span class="op">=</span> data[<span class="st">"Month"</span>].astype(<span class="st">"category"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Age'</span>]<span class="op">=</span>data[<span class="st">'Age'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Age'</span>]<span class="op">=</span>data[<span class="st">'Age'</span>].astype(<span class="st">'int'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Age'</span>] <span class="op">&gt;=</span> <span class="dv">15</span>) <span class="op">&amp;</span> (data[<span class="st">'Age'</span>] <span class="op">&lt;=</span> <span class="dv">65</span>)]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>data.Occupation<span class="op">=</span>data.Occupation.astype(<span class="st">'category'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Annual_Income'</span>]<span class="op">=</span>data[<span class="st">'Annual_Income'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>data.Annual_Income<span class="op">=</span>data.Annual_Income.astype(<span class="st">'float'</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Num_of_Loan'</span>]<span class="op">=</span>data[<span class="st">'Num_of_Loan'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>data.Num_of_Loan<span class="op">=</span>data.Num_of_Loan.astype(<span class="st">'int'</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Num_of_Loan'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> (data[<span class="st">'Num_of_Loan'</span>] <span class="op">&lt;=</span> <span class="dv">10</span>)]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>data.Num_of_Loan <span class="op">=</span> scale(data.Num_of_Loan)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'auto'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Auto"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'debt_consolidation'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Debt Consolidation"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'mortgage'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Mortgage"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'home_equity'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Home Equity"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'personal'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Personal"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'student'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Student"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'credit_builder'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Credit-Builder"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'payday'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Payday"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'not_specified'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Not Specified"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.drop([<span class="st">'Type_of_Loan'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Num_of_Delayed_Payment'</span>]<span class="op">=</span>data[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>data.Num_of_Delayed_Payment<span class="op">=</span>data.Num_of_Delayed_Payment.astype(<span class="st">'int'</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> (data[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">&lt;=</span> <span class="dv">30</span>)]</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>data.Num_of_Delayed_Payment <span class="op">=</span> scale(data.Num_of_Delayed_Payment)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>data.Changed_Credit_Limit<span class="op">=</span>pd.to_numeric(data.Changed_Credit_Limit, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>data.Changed_Credit_Limit <span class="op">=</span> scale(data.Changed_Credit_Limit)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>data.Num_Credit_Inquiries<span class="op">=</span>pd.to_numeric(data.Num_Credit_Inquiries, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Num_Credit_Inquiries'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> (data[<span class="st">'Num_Credit_Inquiries'</span>] <span class="op">&lt;=</span> <span class="dv">1060</span>)]</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>data.Num_Credit_Inquiries <span class="op">=</span> scale(data.Num_Credit_Inquiries)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>data.Credit_Mix<span class="op">=</span>data.Credit_Mix.astype(<span class="st">'category'</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>data.Outstanding_Debt<span class="op">=</span>pd.to_numeric(data.Outstanding_Debt, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>data.Outstanding_Debt <span class="op">=</span> scale(data.Outstanding_Debt)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>data.Payment_of_Min_Amount<span class="op">=</span>data.Payment_of_Min_Amount.astype(<span class="st">'category'</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>data.Amount_invested_monthly<span class="op">=</span>pd.to_numeric(data.Amount_invested_monthly, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>data.Amount_invested_monthly <span class="op">=</span> scale(data.Amount_invested_monthly)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>data.Payment_Behaviour<span class="op">=</span>data.Payment_Behaviour.astype(<span class="st">'category'</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>data.Monthly_Balance<span class="op">=</span>pd.to_numeric(data.Monthly_Balance, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>data.Monthly_Balance <span class="op">=</span> scale(data.Monthly_Balance)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>data.Monthly_Inhand_Salary <span class="op">=</span> scale(data.Monthly_Inhand_Salary)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>data.Delay_from_due_date <span class="op">=</span> scale(data.Delay_from_due_date)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Credit_Score'</span>] <span class="op">!=</span><span class="st">'Standard'</span>)]</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>data.Credit_Score<span class="op">=</span>data.Credit_Score.astype(<span class="st">'category'</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data.dropna(axis<span class="op">=</span><span class="dv">0</span>, how<span class="op">=</span><span class="st">'any'</span>)</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Credit_Score_num'</span>]<span class="op">=</span>data.Credit_Score</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.shape)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>data.head()</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>lenght<span class="op">=</span><span class="bu">len</span>(data)</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(23022, 33)</code></pre>
+</div>
+</div>
+<p>After done the data preprocessing step we are left with <code>r lenght</code> observations. Then we divided the data set into training and testing sample by 7:3 ratio.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>credit_score.drop([<span class="st">'ID'</span>,<span class="st">'Customer_ID'</span>,<span class="st">'Name'</span>,<span class="st">'SSN'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data.dropna(axis<span class="op">=</span><span class="dv">0</span>, how<span class="op">=</span><span class="st">'any'</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"Month"</span>] <span class="op">=</span> data[<span class="st">"Month"</span>].astype(<span class="st">"category"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Age'</span>]<span class="op">=</span>data[<span class="st">'Age'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Age'</span>]<span class="op">=</span>data[<span class="st">'Age'</span>].astype(<span class="st">'int'</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Age'</span>] <span class="op">&gt;=</span> <span class="dv">15</span>) <span class="op">&amp;</span> (data[<span class="st">'Age'</span>] <span class="op">&lt;=</span> <span class="dv">65</span>)]</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>data.Occupation<span class="op">=</span>data.Occupation.astype(<span class="st">'category'</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Annual_Income'</span>]<span class="op">=</span>data[<span class="st">'Annual_Income'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>data.Annual_Income<span class="op">=</span>data.Annual_Income.astype(<span class="st">'float'</span>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'Num_of_Loan'</span>]<span class="op">=</span>data[<span class="st">'Num_of_Loan'</span>].<span class="bu">str</span>.replace(<span class="st">'_'</span>, <span class="st">''</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>data.Num_of_Loan<span class="op">=</span>data.Num_of_Loan.astype(<span class="st">'int'</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.loc[(data[<span class="st">'Num_of_Loan'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> (data[<span class="st">'Num_of_Loan'</span>] <span class="op">&lt;=</span> <span class="dv">10</span>)]</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>data.Num_of_Loan <span class="op">=</span> scale(data.Num_of_Loan)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'auto'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Auto"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'debt_consolidation'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Debt Consolidation"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'mortgage'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Mortgage"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'home_equity'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Home Equity"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'personal'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Personal"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'student'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Student"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'credit_builder'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Credit-Builder"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'payday'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Payday"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'not_specified'</span>] <span class="op">=</span> np.where(data[<span class="st">'Type_of_Loan'</span>].<span class="bu">str</span>.contains(<span class="st">"Not Specified"</span>),<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>data.drop([<span class="st">'Type_of_Loan'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data_test,data_train <span class="op">=</span> train_test_split(data, test_size<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Testing data set: </span><span class="ch">\n</span><span class="st">"</span>, data_test.shape)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Training data set: </span><span class="ch">\n</span><span class="st">"</span>,data_train.shape)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Testing data set: 
+ (6906, 33)
+Training data set: 
+ (16116, 33)</code></pre>
+</div>
 </div>
 </section>
+</section>
+<section id="data-exploration-feature-selection" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration-feature-selection">Data Exploration &amp; Feature Selection</h2>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df_groups <span class="op">=</span> data_train[<span class="st">'Credit_Score'</span>].value_counts()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#create bar plot with custom aesthetics</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>df_groups.plot(kind<span class="op">=</span><span class="st">'bar'</span>, title<span class="op">=</span><span class="st">'Credit Scoring'</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>               ylabel<span class="op">=</span><span class="st">'Count'</span>, xlabel<span class="op">=</span><span class="st">'Category'</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#rotate x-axis ticks vertically</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="65">
+<pre><code>(array([0, 1]), [Text(0, 0, 'Poor'), Text(1, 0, 'Good')])</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="RRproj_files/figure-html/cell-6-output-2.png" width="610" height="442"></p>
+</div>
+</div>
 </section>
 
 </main>

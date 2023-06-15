@@ -8,14 +8,13 @@ format:
     toc-depth: 3
     toc-title: Contents
     toc-location: left
-    theme: solar
+    theme: minty
     fontsize: 1.1em
     linestretch: 1.7
 execute:
   echo: fenced
 title-block-banner: true 
-code-fold: false
-linkcolor: white;
+code-fold: true
 keep-md: true
 ---
 
@@ -37,6 +36,8 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.preprocessing import scale
 import os
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 ```
 
 ````
@@ -77,32 +78,22 @@ Our target variable Credit_Score has 3 classes, but we only took **"Poor"** and 
 ::: {.cell execution_count=2}
 ```` { .cell-code}
 ```{{python}}
+#| warning: false
 os.getcwd()
 credit_score=pd.read_csv('train.csv', )
-```
-
-````
-
-::: {.cell-output .cell-output-stderr}
-```
-/var/folders/6h/yr9vftfx0xv6rz2_sdjvz1180000gn/T/ipykernel_33209/513257851.py:2: DtypeWarning:
-
-Columns (26) have mixed types. Specify dtype option on import or set low_memory=False.
-
-```
-:::
-:::
-
-
-::: {.cell execution_count=3}
-```` { .cell-code}
-```{{python}}
+print(credit_score.shape)
 credit_score.head()
 ```
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=3}
+::: {.cell-output .cell-output-stdout}
+```
+(100000, 28)
+```
+:::
+
+::: {.cell-output .cell-output-display execution_count=62}
 
 ```{=html}
 <div>
@@ -281,7 +272,7 @@ credit_score.head()
 
 We prepared the data set for further analysis step by removing rows with missing values, transforming character variables into categorical/factor variables, and numeric variables and standardized it and removing outliers.
 
-::: {.cell execution_count=4}
+::: {.cell execution_count=3}
 ```` { .cell-code}
 ```{{python}}
 data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)
@@ -308,9 +299,97 @@ data['credit_builder'] = np.where(data['Type_of_Loan'].str.contains("Credit-Buil
 data['payday'] = np.where(data['Type_of_Loan'].str.contains("Payday"),1,0)
 data['not_specified'] = np.where(data['Type_of_Loan'].str.contains("Not Specified"),1,0)
 data=data.drop(['Type_of_Loan'], axis=1)
+
+data['Num_of_Delayed_Payment']=data['Num_of_Delayed_Payment'].str.replace('_', '')
+data.Num_of_Delayed_Payment=data.Num_of_Delayed_Payment.astype('int')
+data=data.loc[(data['Num_of_Delayed_Payment'] >= 0) & (data['Num_of_Delayed_Payment'] <= 30)]
+data.Num_of_Delayed_Payment = scale(data.Num_of_Delayed_Payment)
+data.Changed_Credit_Limit=pd.to_numeric(data.Changed_Credit_Limit, errors='coerce')
+data.Changed_Credit_Limit = scale(data.Changed_Credit_Limit)
+data.Num_Credit_Inquiries=pd.to_numeric(data.Num_Credit_Inquiries, errors='coerce')
+data=data.loc[(data['Num_Credit_Inquiries'] >= 0) & (data['Num_Credit_Inquiries'] <= 1060)]
+data.Num_Credit_Inquiries = scale(data.Num_Credit_Inquiries)
+data.Credit_Mix=data.Credit_Mix.astype('category')
+data.Outstanding_Debt=pd.to_numeric(data.Outstanding_Debt, errors='coerce')
+data.Outstanding_Debt = scale(data.Outstanding_Debt)
+data.Payment_of_Min_Amount=data.Payment_of_Min_Amount.astype('category')
+data.Amount_invested_monthly=pd.to_numeric(data.Amount_invested_monthly, errors='coerce')
+data.Amount_invested_monthly = scale(data.Amount_invested_monthly)
+data.Payment_Behaviour=data.Payment_Behaviour.astype('category')
+data.Monthly_Balance=pd.to_numeric(data.Monthly_Balance, errors='coerce')
+data.Monthly_Balance = scale(data.Monthly_Balance)
+data.Monthly_Inhand_Salary = scale(data.Monthly_Inhand_Salary)
+data.Delay_from_due_date = scale(data.Delay_from_due_date)
+data=data.loc[(data['Credit_Score'] !='Standard')]
+data.Credit_Score=data.Credit_Score.astype('category')
+data = data.dropna(axis=0, how='any')
+
+data['Credit_Score_num']=data.Credit_Score
+print(data.shape)
+data.head()
+lenght=len(data)
 ```
 
 ````
+
+::: {.cell-output .cell-output-stdout}
+```
+(23022, 33)
+```
+:::
+:::
+
+
+After done the data preprocessing step we are left with `r lenght` observations. Then we divided the data set into training and testing sample by 7:3 ratio.
+
+::: {.cell execution_count=4}
+```` { .cell-code}
+```{{python}}
+data_test,data_train = train_test_split(data, test_size=0.7)
+print("Testing data set: \n", data_test.shape)
+print("Training data set: \n",data_train.shape)
+```
+
+````
+
+::: {.cell-output .cell-output-stdout}
+```
+Testing data set: 
+ (6906, 33)
+Training data set: 
+ (16116, 33)
+```
+:::
+:::
+
+
+## Data Exploration & Feature Selection
+
+::: {.cell execution_count=5}
+```` { .cell-code}
+```{{python}}
+#| warning: false
+df_groups = data_train['Credit_Score'].value_counts()
+
+#create bar plot with custom aesthetics
+df_groups.plot(kind='bar', title='Credit Scoring',
+               ylabel='Count', xlabel='Category')
+
+#rotate x-axis ticks vertically
+plt.xticks(rotation=0)
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=65}
+```
+(array([0, 1]), [Text(0, 0, 'Poor'), Text(1, 0, 'Good')])
+```
+:::
+
+::: {.cell-output .cell-output-display}
+![](RRproj_files/figure-html/cell-6-output-2.png){width=610 height=442}
+:::
 :::
 
 
