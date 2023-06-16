@@ -17,6 +17,10 @@ Lastly we employed Random Forest, Adaboost, Neural Network models. We specified 
 We run wrote the codes in Visual Studio Code with extentions of Quarto, Python. 
 The project requires the following dependencies:
 
+- Visual Studio Code 1.79
+- [Quarto 1.3.361](https://quarto.org/docs/download/) 
+- Quarto extention 1.87.3
+- Python extention 2023.10.1
 - Python 3.10.1 
 - Pandas 1.3.5
 - NumPy  1.22.1
@@ -27,5 +31,5 @@ The project requires the following dependencies:
 
 ### Authors
 This project was developed by:
-Author 1: Joachim Ndhokero  /4408804 j.ndhokero@student.uw.edu.pl/ 
+Author 1: Joachim Ndhokero  /448004 j.ndhokero@student.uw.edu.pl/ 
 Author 2: Nomin Batbayar    /442627  n.batbayar@student.uw.edu.pl/  

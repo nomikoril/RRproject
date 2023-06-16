@@ -1,6 +1,6 @@
 ---
 title: "Credit Scoring Classification Analysis"
-author: "Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627"
+author: "Joachim Ndhokero- 448004 and Nomin Batbayar - 442627"
 date: today
 format: 
   html:

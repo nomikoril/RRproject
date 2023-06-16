@@ -1,6 +1,6 @@
 ---
 title: "Credit Scoring Classification Analysis"
-author: "Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627"
+author: "Joachim Ndhokero- 448004 and Nomin Batbayar - 442627"
 date: today
 format: 
   html:
@@ -116,7 +116,7 @@ credit_score.head()
 ```
 :::
 
-::: {.cell-output .cell-output-display execution_count=34}
+::: {.cell-output .cell-output-display execution_count=2}
 
 ```{=html}
 <div>
@@ -324,7 +324,7 @@ credit_score.isna().sum()
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=36}
+::: {.cell-output .cell-output-display execution_count=4}
 ```
 Customer_ID                    0
 Month                          0
@@ -373,7 +373,7 @@ print("Number of month: ", num_month)
 ::: {.cell-output .cell-output-stdout}
 ```
 Number of unique customer:  8692
-Number of month:  {'May', 'August', 'June', 'April', 'March', 'July', 'January', 'February'}
+Number of month:  {'February', 'January', 'April', 'March', 'August', 'June', 'May', 'July'}
 ```
 :::
 :::
@@ -389,7 +389,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occ
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=38}
+::: {.cell-output .cell-output-display execution_count=6}
 ```
 Customer_ID
 CUS_0x2dbc    [nan, Engineer, nan, Engineer, nan, Engineer]
@@ -411,7 +411,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occ
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=39}
+::: {.cell-output .cell-output-display execution_count=7}
 ```
 Customer_ID
 CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
@@ -447,7 +447,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=41}
+::: {.cell-output .cell-output-display execution_count=9}
 ```
 Customer_ID
 CUS_0x1018    [22, 22, 22, 20, nan, 22, 22, 22]
@@ -469,7 +469,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=42}
+::: {.cell-output .cell-output-display execution_count=10}
 ```
 Customer_ID
 CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
@@ -505,7 +505,7 @@ credit_score.isna().sum()
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=44}
+::: {.cell-output .cell-output-display execution_count=12}
 ```
 Customer_ID                  0
 Month                        0
@@ -595,7 +595,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-15-output-1.png){width=826 height=803}
+![](RRproj_files/figure-html/cell-15-output-1.png){}
 :::
 :::
 
@@ -642,7 +642,7 @@ Outlier band of Age : -3.0 ; 69.0
 :::
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-17-output-2.png){width=583 height=404}
+![](RRproj_files/figure-html/cell-17-output-2.png){}
 :::
 :::
 
@@ -760,7 +760,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-20-output-1.png){width=1142 height=1142}
+![](RRproj_files/figure-html/cell-20-output-1.png){}
 :::
 :::
 
@@ -862,7 +862,7 @@ credit_score.head()
 ```
 :::
 
-::: {.cell-output .cell-output-display execution_count=54}
+::: {.cell-output .cell-output-display execution_count=22}
 
 ```{=html}
 <div>
@@ -1084,7 +1084,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-25-output-1.png){width=684 height=510}
+![](RRproj_files/figure-html/cell-25-output-1.png){}
 :::
 :::
 
@@ -1128,8 +1128,8 @@ debt_consolidation          0.193754
 home_equity                 0.191103
 student                     0.188193
 not_specified               0.178540
-Spent                       0.144263
-Payment                     0.132471
+Spent                       0.143776
+Payment                     0.130595
 Total_EMI_per_month         0.114227
 Month                      -0.023726
 Credit_Utilization_Ratio   -0.060603
@@ -1173,7 +1173,7 @@ anova.sort_values(by="Chisq",ascending=False)
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=58}
+::: {.cell-output .cell-output-display execution_count=26}
 
 ```{=html}
 <div>
@@ -1331,9 +1331,9 @@ print("Accuracy of Test Dataset from Random Forest Model: \n", accuracy_score(yt
 HyperParameter Search Space: 
  {'n_estimators': [10, 20], 'max_features': ['sqrt', 'log2'], 'max_depth': [3, 6], 'criterion': ['gini', 'entropy']}
 Optimal Hyperparameter Choosen: 
- {'criterion': 'gini', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
+ {'criterion': 'entropy', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
 Accuracy of Test Dataset from Random Forest Model: 
- 0.8691186466278982
+ 0.8698738765954233
 ```
 :::
 :::

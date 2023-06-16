@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627">
+<meta name="author" content="Joachim Ndhokero- 448004 and Nomin Batbayar - 442627">
 <meta name="dcterms.date" content="2023-06-17">
 
 <title>Credit Scoring Classification Analysis</title>
@@ -91,7 +91,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627 </p>
+               <p>Joachim Ndhokero- 448004 and Nomin Batbayar - 442627 </p>
             </div>
     </div>
       
@@ -218,7 +218,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>(46826, 25)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -406,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>credit_score.isna().<span class="bu">sum</span>()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="36">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>Customer_ID                    0
 Month                          0
 Age                            0
@@ -448,7 +448,7 @@ dtype: int64</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of unique customer:  8692
-Number of month:  {'May', 'August', 'June', 'April', 'March', 'July', 'January', 'February'}</code></pre>
+Number of month:  {'February', 'January', 'April', 'March', 'August', 'June', 'May', 'July'}</code></pre>
 </div>
 </div>
 <p>For example, for Customer_ID=CUS_0x2dbc 3 of the value is missing. So instead of removing them we replaced the missing values with other most occured non missing value.</p>
@@ -459,7 +459,7 @@ Number of month:  {'May', 'August', 'June', 'April', 'March', 'July', 'January',
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>Customer_ID
 CUS_0x2dbc    [nan, Engineer, nan, Engineer, nan, Engineer]
 Name: Occupation, dtype: object</code></pre>
@@ -472,7 +472,7 @@ Name: Occupation, dtype: object</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Occupation'</span>] <span class="op">=</span> credit_score[<span class="st">'Occupation'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].transform(<span class="kw">lambda</span> x: x.fillna(stats.mode(x)[<span class="dv">0</span>][<span class="dv">0</span>])))</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>Customer_ID
 CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
 Name: Occupation, dtype: object</code></pre>
@@ -499,7 +499,7 @@ Name: Occupation, dtype: object</code></pre>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x1018'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="41">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>Customer_ID
 CUS_0x1018    [22, 22, 22, 20, nan, 22, 22, 22]
 Name: Num_of_Delayed_Payment, dtype: object</code></pre>
@@ -512,7 +512,7 @@ Name: Num_of_Delayed_Payment, dtype: object</code></pre>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x1018'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="42">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Customer_ID
 CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
 Name: Num_of_Delayed_Payment, dtype: object</code></pre>
@@ -539,7 +539,7 @@ Name: Num_of_Delayed_Payment, dtype: object</code></pre>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>credit_score.isna().<span class="bu">sum</span>()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="44">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>Customer_ID                  0
 Month                        0
 Age                          0
@@ -624,7 +624,7 @@ dtype: int64</code></pre>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-15-output-1.png" width="826" height="803"></p>
+<p><img src="RRproj_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>To identify the outliers in the data set we will use 1st and 3rd quantiles.</p>
@@ -655,7 +655,7 @@ dtype: int64</code></pre>
 <pre><code>Outlier band of Age : -3.0 ; 69.0</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-17-output-2.png" width="583" height="404"></p>
+<p><img src="RRproj_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <p>And we fixed the other variables with outliers using the same method.</p>
@@ -765,7 +765,7 @@ Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436</code>
 <span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-20-output-1.png" width="1142" height="1142"></p>
+<p><img src="RRproj_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
@@ -856,7 +856,7 @@ Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436</code>
 <div class="cell-output cell-output-stdout">
 <pre><code>(44137, 34)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="54">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 
 
@@ -1057,7 +1057,7 @@ Training data set:
 <span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-25-output-1.png" width="684" height="510"></p>
+<p><img src="RRproj_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <p>For features of the model, we considered Correlation matrix and Anova to select most correlated and associated variables.</p>
@@ -1096,8 +1096,8 @@ debt_consolidation          0.193754
 home_equity                 0.191103
 student                     0.188193
 not_specified               0.178540
-Spent                       0.144263
-Payment                     0.132471
+Spent                       0.143776
+Payment                     0.130595
 Total_EMI_per_month         0.114227
 Month                      -0.023726
 Credit_Utilization_Ratio   -0.060603
@@ -1138,7 +1138,7 @@ Name: Credit_Score, dtype: float64</code></pre>
 <span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>anova.sort_values(by<span class="op">=</span><span class="st">"Chisq"</span>,ascending<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="58">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
@@ -1270,9 +1270,9 @@ Name: Credit_Score, dtype: float64</code></pre>
 <pre><code>HyperParameter Search Space: 
  {'n_estimators': [10, 20], 'max_features': ['sqrt', 'log2'], 'max_depth': [3, 6], 'criterion': ['gini', 'entropy']}
 Optimal Hyperparameter Choosen: 
- {'criterion': 'gini', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
+ {'criterion': 'entropy', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
 Accuracy of Test Dataset from Random Forest Model: 
- 0.8691186466278982</code></pre>
+ 0.8698738765954233</code></pre>
 </div>
 </div>
 </div>
