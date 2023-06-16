@@ -8,22 +8,30 @@ format:
     toc-depth: 3
     toc-title: Contents
     toc-location: left
-    theme: solar
+    theme: minty
     fontsize: 1.1em
     linestretch: 1.7
+    code-overflow: wrap
 execute:
   echo: fenced
 title-block-banner: true 
-code-fold: false
-linkcolor: white;
+code-fold: true
 keep-md: true
 ---
 
+
 ## Introduction
 
-In this project we applied 3 machine learning classification algorithms to build model to predict Credit scores. The dataset we used for this project is Credit scoring dataset from [kaggle](https://www.kaggle.com/datasets/parisrohan/credit-score-classification).
+Credit scoring is very crucial part in the financial industry. It can be very helpful for lenders to assess how the borrowers are worth in terms of credit. And it is equally important that steps and processes taken to build credit scoring model should be open and transparent. This way one can ensure that the model is reliable and fair.
+In this project, we develop a credit scoring midel using 3 machine learning approaches, to assess which model better predicts the Credit scores. 
 
-### Importing Neccessary Libraries
+Firstly, we describe the dataset used in our study. We obtained Credit scoring dataset from [kaggle](https://www.kaggle.com/datasets/parisrohan/credit-score-classification). Which includes customer's demographics, credit history, income and other relavant features. To ensure transparency we provided detailed data preprocessinf steps that we performed, and steps for resolving missing and outlier values.
+
+Then, to find most relavant features to our model, we use correlation coefficients to decide if we include variable in model for numeric variables. For categorical variable we used ANOVA to asses if variable has association with credit scoring dependent variable.
+
+Next we use .... machine learning algorithms. We specify the hyperparameters, model training processes, to enable other researchesr to replicate our model development process.
+
+##### Importing Neccessary Libraries
 
 Following libraries are used for this project
 ```{python}
@@ -39,12 +47,16 @@ import scipy.stats as stats
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 ```
 
-### Dataset
+##### Dataset
 
-Initial dimension of the data had 100'000 rows and 28 variables. After removing some unique identification variables we are going to work on are:
+Initial dimension of the data had 100'000 rows and 28 variables. 
 
+-   "ID" - Unique identifier
+-   "Customer_ID" - Unique identifier of customer
+-   "Name" - Name of person
+-   "SSN" - Unique identifier
 -   "Month" - Month of the year
--   "Age" - Age of the person, We limited it into 14+56
+-   "Age" - Age of the person
 -   "Occupation" - Occupation of the person, 16 factor
 -   "Annual_Income" - Annual income of the person, continuous variable
 -   "Monthly_Inhand_Salary" - Monthly salary, continuous variable
@@ -68,7 +80,7 @@ Initial dimension of the data had 100'000 rows and 28 variables. After removing 
 -   "Monthly_Balance" - monthly balance amount of the customer (in USD)
 -   "Credit_Score" - bracket of credit score (Poor, Standard, Good)
 
-Our target variable Credit_Score has 3 classes, but we only took **"Poor"** and **"Good"** categories to further analysis.
+Our target variable Credit_Score has 3 classes, but we will only work with **"Poor"** and **"Good"** categories to further analysis. So that we are left with **46'826** observations.
 
 ```{python }
 #| warning: false
@@ -299,14 +311,18 @@ plt.show()
 
 ```{python}
 credit_score.isna().sum()
+<<<<<<< HEAD
 #credit_score = credit_score.dropna(axis=0, how='any')
 
 print(credit_score.shape)
 credit_score.head()
+=======
+>>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
 ```
 
 
 
+<<<<<<< HEAD
 
 #### Normalization & Other variables
 
@@ -366,6 +382,9 @@ credit_score.head()
 
 
 After done the data preprocessing step we are left with **44'111** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'233** observations and Training data set has **30'878** observations.
+=======
+After done the data preprocessing step we are left with 23'022 observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has 6'906 observations and Training data set has 16'116 observations.
+>>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
 
 ```{python}
 data=credit_score
@@ -389,3 +408,13 @@ df_groups.plot(kind='bar', title='Credit Scoring',
 plt.xticks(rotation=0)
 ```
 
+<<<<<<< HEAD
+=======
+
+```{python}
+#data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)
+#data = data.dropna(axis=0, how='any')
+#data.shape
+```
+
+>>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
