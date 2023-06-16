@@ -11,6 +11,7 @@ format:
     theme: minty
     fontsize: 1.1em
     linestretch: 1.7
+    code-overflow: wrap
 execute:
   echo: fenced
 title-block-banner: true 
@@ -55,7 +56,7 @@ Initial dimension of the data had 100'000 rows and 28 variables.
 -   "Name" - Name of person
 -   "SSN" - Unique identifier
 -   "Month" - Month of the year
--   "Age" - Age of the person, We limited it into 14+56
+-   "Age" - Age of the person
 -   "Occupation" - Occupation of the person, 16 factor
 -   "Annual_Income" - Annual income of the person, continuous variable
 -   "Monthly_Inhand_Salary" - Monthly salary, continuous variable
@@ -133,6 +134,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occ
 After replacing the missiong value of occupation, above example looks like this.
 
 ```{python}
+#| code-fold: false
 credit_score['Occupation'] = credit_score['Occupation'].fillna(credit_score.groupby('Customer_ID')['Occupation'].transform(lambda x: x.fillna(stats.mode(x)[0][0])))
 credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occupation'].apply(list)
 ```
@@ -153,8 +155,8 @@ credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num
 
 After replacing the missiong value of Num_of_Delayed_Payment, above example looks like this.
 ```{python}
+#| code-fold: false
 credit_score['Num_of_Delayed_Payment'] = credit_score['Num_of_Delayed_Payment'].fillna(credit_score.groupby('Customer_ID')['Num_of_Delayed_Payment'].transform(lambda x: x.fillna(x.astype('float64').mean())))
-
 credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num_of_Delayed_Payment'].apply(list)
 ```
 
@@ -172,8 +174,6 @@ After missing value treatment we have now left with very few missing value.
 credit_score.isna().sum()
 ```
 
-
-
 ### Data type
 Here we are converting variables into suitable data types numeric or categorical.
 ```{python}
@@ -186,6 +186,7 @@ credit_score.Num_Bank_Accounts=credit_score.Num_Bank_Accounts.astype('float')
 credit_score.Num_Credit_Card=credit_score.Num_Credit_Card.astype('float')
 credit_score.Interest_Rate=credit_score.Interest_Rate.astype('float')
 credit_score.Num_of_Loan=credit_score.Num_of_Loan.astype('int')
+credit_score.Num_of_Delayed_Payment=credit_score.Num_of_Delayed_Payment.astype('float')
 credit_score.Changed_Credit_Limit=pd.to_numeric(credit_score.Changed_Credit_Limit, errors='coerce')
 credit_score.Num_Credit_Inquiries=pd.to_numeric(credit_score.Num_Credit_Inquiries, errors='coerce')
 credit_score.Credit_Mix=credit_score.Credit_Mix.astype('category')
@@ -197,5 +198,151 @@ credit_score.Monthly_Balance=pd.to_numeric(credit_score.Monthly_Balance, errors=
 ```
 
 
+#### Outlier Values
+We check each numeric values if there is any outliers or wrong values by drawing the histogram of it and treat it individually. We clearly see that in Age, Annual_Income, Num_Bank_Account, Num_Credit_Card, Interest_Rate, Num_of_Loan, Num_of_Delayed_Payment, Num_Credit_Inquiries, Total_EMI_per_month, Amount_invested_monthly, Monthly_Balance has outliers or wrong values in it. We will fix it by using 1 and 3rd quantiles to make outlier values NAN and treat it same as the missing values.  
+```{python}
+#| warning: false
+fig, axis = plt.subplots(4, 4, figsize=(10,10))
+credit_score.hist(ax=axis, color = "mediumturquoise", edgecolor="white" , grid=False)
+plt.show()
+```
 
+To get 1st and 3rd quantiles we will use below function.
+```{python}
+#| code-fold: false
+def get_1_3_qr(credit_score, column, multiply=1.5):
+    q1 = credit_score[column].quantile(0.25)
+    q3 = credit_score[column].quantile(0.75)
+    iqr = q3 -q1
+    
+    lower = q1-iqr*multiply
+    upper = q3+iqr*multiply
+    print('Outlier band of', column, ":", lower, ";", upper)
+```
+
+For age, we can tell than below 0 and above 67 should be outlier value and we make such value NAN and then treat it same as we did for missing values.
+```{python}
+#| code-fold: false
+get_1_3_qr(credit_score, 'Age', multiply=1.5)
+credit_score['Age']=credit_score['Age'].apply(lambda x: np.NaN if ((x<0)|(x>67)) else x)
+credit_score['Age'] = credit_score['Age'].fillna(credit_score.groupby('Customer_ID')['Age'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+plt.hist(credit_score.Age, color = "mediumturquoise", edgecolor="white")
+plt.show()
+```
+
+And we fixed the other variables with outliers using the same method.
+
+- First identifying outlier bands: 
+```{python}
+get_1_3_qr(credit_score, 'Annual_Income', multiply=1.5)
+get_1_3_qr(credit_score, 'Num_Bank_Accounts', multiply=1.5)
+get_1_3_qr(credit_score, 'Num_Credit_Inquiries', multiply=1.5)
+get_1_3_qr(credit_score, 'Interest_Rate', multiply=1.5)
+get_1_3_qr(credit_score, 'Num_of_Loan', multiply=1.5)
+get_1_3_qr(credit_score, 'Num_of_Delayed_Payment', multiply=1.5)
+get_1_3_qr(credit_score, 'Num_Credit_Card', multiply=1.5)
+get_1_3_qr(credit_score, 'Total_EMI_per_month', multiply=1.5)
+get_1_3_qr(credit_score, 'Amount_invested_monthly', multiply=1.5)
+get_1_3_qr(credit_score, 'Monthly_Balance', multiply=1.5)
+```
+
+- Then replacing outlier variables with NAN:
+```{python}
+credit_score['Annual_Income']=credit_score['Annual_Income'].apply(lambda x: np.NaN if ((x<0)|(x>149060)) else x)
+credit_score['Num_Bank_Accounts']=credit_score['Num_Bank_Accounts'].apply(lambda x: np.NaN if ((x<0)|(x>16)) else x)
+credit_score['Num_Credit_Inquiries']=credit_score['Num_Credit_Inquiries'].apply(lambda x: np.NaN if ((x<0)|(x>21)) else x)
+credit_score['Interest_Rate']=credit_score['Interest_Rate'].apply(lambda x: np.NaN if ((x<0)|(x>50)) else x)
+credit_score['Num_of_Loan']=credit_score['Num_of_Loan'].apply(lambda x: np.NaN if ((x<0)|(x>12)) else x)
+credit_score['Num_of_Delayed_Payment']=credit_score['Num_of_Delayed_Payment'].apply(lambda x: np.NaN if ((x<0)|(x>36)) else x)
+credit_score['Num_Credit_Card']=credit_score['Num_Credit_Card'].apply(lambda x: np.NaN if ((x<0)|(x>12)) else x)
+credit_score['Total_EMI_per_month']=credit_score['Total_EMI_per_month'].apply(lambda x: np.NaN if ((x<0)|(x>374)) else x)
+credit_score['Amount_invested_monthly']=credit_score['Amount_invested_monthly'].apply(lambda x: np.NaN if ((x<0)|(x>567)) else x)
+credit_score['Monthly_Balance']=credit_score['Monthly_Balance'].apply(lambda x: np.NaN if (x<0) else x)
+```
+- Next we replace with mean value of each customers:
+```{python}
+credit_score['Annual_Income'] = credit_score['Annual_Income'].fillna(credit_score.groupby('Customer_ID')['Annual_Income'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_Bank_Accounts'] = credit_score['Num_Bank_Accounts'].fillna(credit_score.groupby('Customer_ID')['Num_Bank_Accounts'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_Credit_Inquiries'] = credit_score['Num_Credit_Inquiries'].fillna(credit_score.groupby('Customer_ID')['Num_Credit_Inquiries'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Interest_Rate'] = credit_score['Interest_Rate'].fillna(credit_score.groupby('Customer_ID')['Interest_Rate'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_of_Loan'] = credit_score['Num_of_Loan'].fillna(credit_score.groupby('Customer_ID')['Num_of_Loan'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_of_Delayed_Payment'] = credit_score['Num_of_Delayed_Payment'].fillna(credit_score.groupby('Customer_ID')['Num_of_Delayed_Payment'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_Credit_Card'] = credit_score['Num_Credit_Card'].fillna(credit_score.groupby('Customer_ID')['Num_Credit_Card'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Total_EMI_per_month'] = credit_score['Total_EMI_per_month'].fillna(credit_score.groupby('Customer_ID')['Total_EMI_per_month'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Amount_invested_monthly'] = credit_score['Amount_invested_monthly'].fillna(credit_score.groupby('Customer_ID')['Amount_invested_monthly'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Monthly_Balance'] = credit_score['Monthly_Balance'].fillna(credit_score.groupby('Customer_ID')['Monthly_Balance'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+```
+
+- After treating the outliers, variables distribution looks like this
+```{python}
+
+figure, axis = plt.subplots(4, 3, figsize=(12, 12))
+
+# Plot histograms
+axis[0, 0].hist(credit_score.Annual_Income, color="mediumturquoise", edgecolor="white")
+axis[0, 1].hist(credit_score.Num_Bank_Accounts, color="mediumturquoise", edgecolor="white")
+axis[0, 2].hist(credit_score.Num_Credit_Inquiries, color="mediumturquoise", edgecolor="white")
+axis[1, 0].hist(credit_score.Interest_Rate, color="mediumturquoise", edgecolor="white")
+axis[1, 1].hist(credit_score.Num_of_Loan, color="mediumturquoise", edgecolor="white")
+axis[1, 2].hist(credit_score.Num_of_Delayed_Payment, color="mediumturquoise", edgecolor="white")
+axis[2, 0].hist(credit_score.Num_Credit_Card, color="mediumturquoise", edgecolor="white")
+axis[2, 1].hist(credit_score.Total_EMI_per_month, color="mediumturquoise", edgecolor="white")
+axis[2, 2].hist(credit_score.Amount_invested_monthly, color="mediumturquoise", edgecolor="white")
+axis[3, 0].hist(credit_score.Monthly_Balance, color="mediumturquoise", edgecolor="white")
+
+# Set titles
+axis[0, 0].set_title('Annual Income')
+axis[0, 1].set_title('Number of Bank Accounts')
+axis[0, 2].set_title('Number of Credit Inquiries')
+axis[1, 0].set_title('Interest Rate')
+axis[1, 1].set_title('Number of Loans')
+axis[1, 2].set_title('Number of Delayed Payments')
+axis[2, 0].set_title('Number of Credit Cards')
+axis[2, 1].set_title('Total EMI per Month')
+axis[2, 2].set_title('Amount Invested Monthly')
+axis[3, 0].set_title('Monthly Balance')
+
+# Adjust spacing between subplots
+figure.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+```{python}
+credit_score.isna().sum()
+```
+
+
+
+After done the data preprocessing step we are left with 23'022 observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has 6'906 observations and Training data set has 16'116 observations.
+
+```{python}
+data=credit_score
+data_test,data_train = train_test_split(data, test_size=0.7, random_state=123)
+print("Testing data set: \n", data_test.shape)
+print("Training data set: \n",data_train.shape)
+
+```
+
+## Data Exploration & Feature Selection
+
+```{python}
+#| warning: false
+df_groups = data_train['Credit_Score'].value_counts()
+
+#create bar plot with custom aesthetics
+df_groups.plot(kind='bar', title='Credit Scoring',
+               ylabel='Count', xlabel='Category')
+
+#rotate x-axis ticks vertically
+plt.xticks(rotation=0)
+```
+
+
+```{python}
+#data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)
+#data = data.dropna(axis=0, how='any')
+#data.shape
+```
 

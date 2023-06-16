@@ -118,6 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#treating-missing-data" id="toc-treating-missing-data" class="nav-link" data-scroll-target="#treating-missing-data">Treating Missing Data</a></li>
   <li><a href="#data-type" id="toc-data-type" class="nav-link" data-scroll-target="#data-type">Data type</a></li>
   </ul></li>
+  <li><a href="#data-exploration-feature-selection" id="toc-data-exploration-feature-selection" class="nav-link" data-scroll-target="#data-exploration-feature-selection">Data Exploration &amp; Feature Selection</a></li>
   </ul>
 </nav>
 </div>
@@ -435,7 +436,7 @@ dtype: int64</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of unique customer:  8692
-Number of month:  {'July', 'August', 'March', 'May', 'June', 'February', 'January', 'April'}</code></pre>
+Number of month:  {'April', 'May', 'January', 'March', 'August', 'July', 'February', 'June'}</code></pre>
 </div>
 </div>
 <p>For example, for Customer_ID=CUS_0x2dbc 3 of the value is missing. So instead of removing them we replaced the missing values with other most occured non missing value.</p>
@@ -454,13 +455,11 @@ Name: Occupation, dtype: object</code></pre>
 </div>
 <p>After replacing the missiong value of occupation, above example looks like this.</p>
 <div class="cell" data-execution_count="7">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Occupation'</span>] <span class="op">=</span> credit_score[<span class="st">'Occupation'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].transform(<span class="kw">lambda</span> x: x.fillna(stats.mode(x)[<span class="dv">0</span>][<span class="dv">0</span>])))</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Occupation'</span>] <span class="op">=</span> credit_score[<span class="st">'Occupation'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].transform(<span class="kw">lambda</span> x: x.fillna(stats.mode(x)[<span class="dv">0</span>][<span class="dv">0</span>])))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>Customer_ID
 CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
@@ -496,14 +495,11 @@ Name: Num_of_Delayed_Payment, dtype: object</code></pre>
 </div>
 <p>After replacing the missiong value of Num_of_Delayed_Payment, above example looks like this.</p>
 <div class="cell" data-execution_count="10">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x1018'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Customer_ID
 CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
@@ -577,18 +573,274 @@ dtype: int64</code></pre>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>credit_score.Num_Credit_Card<span class="op">=</span>credit_score.Num_Credit_Card.astype(<span class="st">'float'</span>)</span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>credit_score.Interest_Rate<span class="op">=</span>credit_score.Interest_Rate.astype(<span class="st">'float'</span>)</span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>credit_score.Num_of_Loan<span class="op">=</span>credit_score.Num_of_Loan.astype(<span class="st">'int'</span>)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>credit_score.Changed_Credit_Limit<span class="op">=</span>pd.to_numeric(credit_score.Changed_Credit_Limit, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>credit_score.Num_Credit_Inquiries<span class="op">=</span>pd.to_numeric(credit_score.Num_Credit_Inquiries, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>credit_score.Credit_Mix<span class="op">=</span>credit_score.Credit_Mix.astype(<span class="st">'category'</span>)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>credit_score.Outstanding_Debt<span class="op">=</span>pd.to_numeric(credit_score.Outstanding_Debt, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>credit_score.Payment_of_Min_Amount<span class="op">=</span>credit_score.Payment_of_Min_Amount.astype(<span class="st">'category'</span>)</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>credit_score.Amount_invested_monthly<span class="op">=</span>pd.to_numeric(credit_score.Amount_invested_monthly, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>credit_score.Credit_Score<span class="op">=</span>credit_score.Credit_Score.astype(<span class="st">'category'</span>)</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>credit_score.Monthly_Balance<span class="op">=</span>pd.to_numeric(credit_score.Monthly_Balance, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>credit_score.Num_of_Delayed_Payment<span class="op">=</span>credit_score.Num_of_Delayed_Payment.astype(<span class="st">'float'</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>credit_score.Changed_Credit_Limit<span class="op">=</span>pd.to_numeric(credit_score.Changed_Credit_Limit, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>credit_score.Num_Credit_Inquiries<span class="op">=</span>pd.to_numeric(credit_score.Num_Credit_Inquiries, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>credit_score.Credit_Mix<span class="op">=</span>credit_score.Credit_Mix.astype(<span class="st">'category'</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>credit_score.Outstanding_Debt<span class="op">=</span>pd.to_numeric(credit_score.Outstanding_Debt, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>credit_score.Payment_of_Min_Amount<span class="op">=</span>credit_score.Payment_of_Min_Amount.astype(<span class="st">'category'</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>credit_score.Amount_invested_monthly<span class="op">=</span>pd.to_numeric(credit_score.Amount_invested_monthly, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>credit_score.Credit_Score<span class="op">=</span>credit_score.Credit_Score.astype(<span class="st">'category'</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>credit_score.Monthly_Balance<span class="op">=</span>pd.to_numeric(credit_score.Monthly_Balance, errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<section id="outlier-values" class="level4">
+<h4 class="anchored" data-anchor-id="outlier-values">Outlier Values</h4>
+<p>We check each numeric values if there is any outliers or wrong values by drawing the histogram of it and treat it individually. We clearly see that in Age, Annual_Income, Num_Bank_Account, Num_Credit_Card, Interest_Rate, Num_of_Loan, Num_of_Delayed_Payment, Num_Credit_Inquiries, Total_EMI_per_month, Amount_invested_monthly, Monthly_Balance has outliers or wrong values in it. We will fix it by using 1 and 3rd quantiles to make outlier values NAN and treat it same as the missing values.</p>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>fig, axis <span class="op">=</span> plt.subplots(<span class="dv">4</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>credit_score.hist(ax<span class="op">=</span>axis, color <span class="op">=</span> <span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span> , grid<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="RRproj_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>To get 1st and 3rd quantiles we will use below function.</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_1_3_qr(credit_score, column, multiply<span class="op">=</span><span class="fl">1.5</span>):</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    q1 <span class="op">=</span> credit_score[column].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    q3 <span class="op">=</span> credit_score[column].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    iqr <span class="op">=</span> q3 <span class="op">-</span>q1</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> q1<span class="op">-</span>iqr<span class="op">*</span>multiply</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> q3<span class="op">+</span>iqr<span class="op">*</span>multiply</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Outlier band of'</span>, column, <span class="st">":"</span>, lower, <span class="st">";"</span>, upper)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For age, we can tell than below 0 and above 67 should be outlier value and we make such value NAN and then treat it same as we did for missing values.</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Age'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Age'</span>]<span class="op">=</span>credit_score[<span class="st">'Age'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">67</span>)) <span class="cf">else</span> x)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Age'</span>] <span class="op">=</span> credit_score[<span class="st">'Age'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Age'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>plt.hist(credit_score.Age, color <span class="op">=</span> <span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outlier band of Age : -3.0 ; 69.0</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="RRproj_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>And we fixed the other variables with outliers using the same method.</p>
+<ul>
+<li>First identifying outlier bands:</li>
+</ul>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Annual_Income'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Num_Bank_Accounts'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Num_Credit_Inquiries'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Interest_Rate'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Num_of_Loan'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Num_of_Delayed_Payment'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Num_Credit_Card'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Total_EMI_per_month'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Amount_invested_monthly'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>get_1_3_qr(credit_score, <span class="st">'Monthly_Balance'</span>, multiply<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outlier band of Annual_Income : -59336.89750000001 ; 149059.0425
+Outlier band of Num_Bank_Accounts : -4.5 ; 15.5
+Outlier band of Num_Credit_Inquiries : -7.5 ; 20.5
+Outlier band of Interest_Rate : -18.5 ; 49.5
+Outlier band of Num_of_Loan : -4.0 ; 12.0
+Outlier band of Num_of_Delayed_Payment : -8.5 ; 35.5
+Outlier band of Num_Credit_Card : -0.5 ; 11.5
+Outlier band of Total_EMI_per_month : -170.8962565708198 ; 373.8051122659707
+Outlier band of Amount_invested_monthly : -219.46674583295186 ; 565.4620842502486
+Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436</code></pre>
+</div>
+</div>
+<ul>
+<li>Then replacing outlier variables with NAN:</li>
+</ul>
+<div class="cell" data-execution_count="18">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Annual_Income'</span>]<span class="op">=</span>credit_score[<span class="st">'Annual_Income'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">149060</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Bank_Accounts'</span>]<span class="op">=</span>credit_score[<span class="st">'Num_Bank_Accounts'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">16</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Credit_Inquiries'</span>]<span class="op">=</span>credit_score[<span class="st">'Num_Credit_Inquiries'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">21</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Interest_Rate'</span>]<span class="op">=</span>credit_score[<span class="st">'Interest_Rate'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">50</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Loan'</span>]<span class="op">=</span>credit_score[<span class="st">'Num_of_Loan'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">12</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>]<span class="op">=</span>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">36</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Credit_Card'</span>]<span class="op">=</span>credit_score[<span class="st">'Num_Credit_Card'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">12</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Total_EMI_per_month'</span>]<span class="op">=</span>credit_score[<span class="st">'Total_EMI_per_month'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">374</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Amount_invested_monthly'</span>]<span class="op">=</span>credit_score[<span class="st">'Amount_invested_monthly'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> ((x<span class="op">&lt;</span><span class="dv">0</span>)<span class="op">|</span>(x<span class="op">&gt;</span><span class="dv">567</span>)) <span class="cf">else</span> x)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Monthly_Balance'</span>]<span class="op">=</span>credit_score[<span class="st">'Monthly_Balance'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.NaN <span class="cf">if</span> (x<span class="op">&lt;</span><span class="dv">0</span>) <span class="cf">else</span> x)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Next we replace with mean value of each customers:</li>
+</ul>
+<div class="cell" data-execution_count="19">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Annual_Income'</span>] <span class="op">=</span> credit_score[<span class="st">'Annual_Income'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Annual_Income'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Bank_Accounts'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_Bank_Accounts'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_Bank_Accounts'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Credit_Inquiries'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_Credit_Inquiries'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_Credit_Inquiries'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Interest_Rate'</span>] <span class="op">=</span> credit_score[<span class="st">'Interest_Rate'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Interest_Rate'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Loan'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Loan'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Loan'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_Credit_Card'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_Credit_Card'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_Credit_Card'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Total_EMI_per_month'</span>] <span class="op">=</span> credit_score[<span class="st">'Total_EMI_per_month'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Total_EMI_per_month'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Amount_invested_monthly'</span>] <span class="op">=</span> credit_score[<span class="st">'Amount_invested_monthly'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Amount_invested_monthly'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Monthly_Balance'</span>] <span class="op">=</span> credit_score[<span class="st">'Monthly_Balance'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Monthly_Balance'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>After treating the outliers, variables distribution looks like this</li>
+</ul>
+<div class="cell" data-execution_count="20">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>figure, axis <span class="op">=</span> plt.subplots(<span class="dv">4</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">12</span>))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">0</span>].hist(credit_score.Annual_Income, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">1</span>].hist(credit_score.Num_Bank_Accounts, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">2</span>].hist(credit_score.Num_Credit_Inquiries, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">0</span>].hist(credit_score.Interest_Rate, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">1</span>].hist(credit_score.Num_of_Loan, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">2</span>].hist(credit_score.Num_of_Delayed_Payment, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">0</span>].hist(credit_score.Num_Credit_Card, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">1</span>].hist(credit_score.Total_EMI_per_month, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">2</span>].hist(credit_score.Amount_invested_monthly, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">3</span>, <span class="dv">0</span>].hist(credit_score.Monthly_Balance, color<span class="op">=</span><span class="st">"mediumturquoise"</span>, edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Set titles</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">0</span>].set_title(<span class="st">'Annual Income'</span>)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">1</span>].set_title(<span class="st">'Number of Bank Accounts'</span>)</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">0</span>, <span class="dv">2</span>].set_title(<span class="st">'Number of Credit Inquiries'</span>)</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">0</span>].set_title(<span class="st">'Interest Rate'</span>)</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">1</span>].set_title(<span class="st">'Number of Loans'</span>)</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">1</span>, <span class="dv">2</span>].set_title(<span class="st">'Number of Delayed Payments'</span>)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">0</span>].set_title(<span class="st">'Number of Credit Cards'</span>)</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">1</span>].set_title(<span class="st">'Total EMI per Month'</span>)</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">2</span>, <span class="dv">2</span>].set_title(<span class="st">'Amount Invested Monthly'</span>)</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>axis[<span class="dv">3</span>, <span class="dv">0</span>].set_title(<span class="st">'Monthly Balance'</span>)</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust spacing between subplots</span></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>figure.tight_layout()</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot</span></span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="RRproj_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>credit_score.isna().<span class="bu">sum</span>()</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>Customer_ID                    0
+Month                          0
+Age                            8
+Occupation                     0
+Annual_Income               1249
+Monthly_Inhand_Salary         85
+Num_Bank_Accounts              7
+Num_Credit_Card                8
+Interest_Rate                  9
+Num_of_Loan                   16
+Type_of_Loan                   0
+Delay_from_due_date            0
+Num_of_Delayed_Payment        43
+Changed_Credit_Limit           6
+Num_Credit_Inquiries           8
+Credit_Mix                     0
+Outstanding_Debt               0
+Credit_Utilization_Ratio       0
+Credit_History_Age            47
+Payment_of_Min_Amount          0
+Total_EMI_per_month         1235
+Amount_invested_monthly      272
+Payment_Behaviour              0
+Monthly_Balance               10
+Credit_Score                   0
+dtype: int64</code></pre>
+</div>
+</div>
+<p>After done the data preprocessing step we are left with 23’022 observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has 6’906 observations and Training data set has 16’116 observations.</p>
+<div class="cell" data-execution_count="22">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>data<span class="op">=</span>credit_score</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>data_test,data_train <span class="op">=</span> train_test_split(data, test_size<span class="op">=</span><span class="fl">0.7</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Testing data set: </span><span class="ch">\n</span><span class="st">"</span>, data_test.shape)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Training data set: </span><span class="ch">\n</span><span class="st">"</span>,data_train.shape)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Testing data set: 
+ (14047, 25)
+Training data set: 
+ (32779, 25)</code></pre>
+</div>
+</div>
 </section>
+</section>
+</section>
+<section id="data-exploration-feature-selection" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration-feature-selection">Data Exploration &amp; Feature Selection</h2>
+<div class="cell" data-execution_count="23">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>df_groups <span class="op">=</span> data_train[<span class="st">'Credit_Score'</span>].value_counts()</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co">#create bar plot with custom aesthetics</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>df_groups.plot(kind<span class="op">=</span><span class="st">'bar'</span>, title<span class="op">=</span><span class="st">'Credit Scoring'</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>               ylabel<span class="op">=</span><span class="st">'Count'</span>, xlabel<span class="op">=</span><span class="st">'Category'</span>)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co">#rotate x-axis ticks vertically</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>(array([0, 1]), [Text(0, 0, 'Poor'), Text(1, 0, 'Good')])</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="RRproj_files/figure-html/cell-24-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co">#data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co">#data = data.dropna(axis=0, how='any')</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="co">#data.shape</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
 
 </main>
