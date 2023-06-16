@@ -21,9 +21,16 @@ keep-md: true
 
 ## Introduction
 
-In this project we applied 3 machine learning classification algorithms to build model to predict Credit scores. The dataset we used for this project is Credit scoring dataset from [kaggle](https://www.kaggle.com/datasets/parisrohan/credit-score-classification).
+Credit scoring is very crucial part in the financial industry. It can be very helpful for lenders to assess how the borrowers are worth in terms of credit. And it is equally important that steps and processes taken to build credit scoring model should be open and transparent. This way one can ensure that the model is reliable and fair.
+In this project, we develop a credit scoring midel using 3 machine learning approaches, to assess which model better predicts the Credit scores. 
 
-### Importing Neccessary Libraries
+Firstly, we describe the dataset used in our study. We obtained Credit scoring dataset from [kaggle](https://www.kaggle.com/datasets/parisrohan/credit-score-classification). Which includes customer's demographics, credit history, income and other relavant features. To ensure transparency we provided detailed data preprocessinf steps that we performed, and steps for resolving missing and outlier values.
+
+Then, to find most relavant features to our model, we use correlation coefficients to decide if we include variable in model for numeric variables. For categorical variable we used ANOVA to asses if variable has association with credit scoring dependent variable.
+
+Next we use .... machine learning algorithms. We specify the hyperparameters, model training processes, to enable other researchesr to replicate our model development process.
+
+##### Importing Neccessary Libraries
 
 Following libraries are used for this project
 
@@ -38,16 +45,22 @@ from sklearn.preprocessing import scale
 import os
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import scipy.stats as stats
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 ```
 
 ````
 :::
 
 
-### Dataset
+##### Dataset
 
-Initial dimension of the data had 100'000 rows and 28 variables. After removing some unique identification variables we are going to work on are:
+Initial dimension of the data had 100'000 rows and 28 variables. 
 
+-   "ID" - Unique identifier
+-   "Customer_ID" - Unique identifier of customer
+-   "Name" - Name of person
+-   "SSN" - Unique identifier
 -   "Month" - Month of the year
 -   "Age" - Age of the person, We limited it into 14+56
 -   "Occupation" - Occupation of the person, 16 factor
@@ -73,14 +86,16 @@ Initial dimension of the data had 100'000 rows and 28 variables. After removing 
 -   "Monthly_Balance" - monthly balance amount of the customer (in USD)
 -   "Credit_Score" - bracket of credit score (Poor, Standard, Good)
 
-Our target variable Credit_Score has 3 classes, but we only took **"Poor"** and **"Good"** categories to further analysis.
+Our target variable Credit_Score has 3 classes, but we will only work with **"Poor"** and **"Good"** categories to further analysis. So that we are left with **46'826** observations.
 
 ::: {.cell execution_count=2}
 ```` { .cell-code}
 ```{{python}}
 #| warning: false
 os.getcwd()
-credit_score=pd.read_csv('train.csv', )
+credit_score=pd.read_csv('train.csv')
+credit_score=credit_score.drop(['ID','Name','SSN'], axis=1) # remove unnecessary unique identifier columns
+credit_score=credit_score[credit_score.Credit_Score!='Standard'] # filter target variable and drop Standard category
 print(credit_score.shape)
 credit_score.head()
 ```
@@ -89,11 +104,11 @@ credit_score.head()
 
 ::: {.cell-output .cell-output-stdout}
 ```
-(100000, 28)
+(46826, 25)
 ```
 :::
 
-::: {.cell-output .cell-output-display execution_count=62}
+::: {.cell-output .cell-output-display execution_count=2}
 
 ```{=html}
 <div>
@@ -114,16 +129,16 @@ credit_score.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>ID</th>
       <th>Customer_ID</th>
       <th>Month</th>
-      <th>Name</th>
       <th>Age</th>
-      <th>SSN</th>
       <th>Occupation</th>
       <th>Annual_Income</th>
       <th>Monthly_Inhand_Salary</th>
       <th>Num_Bank_Accounts</th>
+      <th>Num_Credit_Card</th>
+      <th>Interest_Rate</th>
+      <th>Num_of_Loan</th>
       <th>...</th>
       <th>Credit_Mix</th>
       <th>Outstanding_Debt</th>
@@ -140,16 +155,16 @@ credit_score.head()
   <tbody>
     <tr>
       <th>0</th>
-      <td>0x1602</td>
       <td>CUS_0xd40</td>
       <td>January</td>
-      <td>Aaron Maashoh</td>
       <td>23</td>
-      <td>821-00-0265</td>
       <td>Scientist</td>
       <td>19114.12</td>
       <td>1824.843333</td>
       <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
       <td>...</td>
       <td>_</td>
       <td>809.98</td>
@@ -164,16 +179,16 @@ credit_score.head()
     </tr>
     <tr>
       <th>1</th>
-      <td>0x1603</td>
       <td>CUS_0xd40</td>
       <td>February</td>
-      <td>Aaron Maashoh</td>
       <td>23</td>
-      <td>821-00-0265</td>
       <td>Scientist</td>
       <td>19114.12</td>
       <td>NaN</td>
       <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
       <td>...</td>
       <td>Good</td>
       <td>809.98</td>
@@ -188,16 +203,16 @@ credit_score.head()
     </tr>
     <tr>
       <th>2</th>
-      <td>0x1604</td>
       <td>CUS_0xd40</td>
       <td>March</td>
-      <td>Aaron Maashoh</td>
       <td>-500</td>
-      <td>821-00-0265</td>
       <td>Scientist</td>
       <td>19114.12</td>
       <td>NaN</td>
       <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
       <td>...</td>
       <td>Good</td>
       <td>809.98</td>
@@ -212,16 +227,16 @@ credit_score.head()
     </tr>
     <tr>
       <th>3</th>
-      <td>0x1605</td>
       <td>CUS_0xd40</td>
       <td>April</td>
-      <td>Aaron Maashoh</td>
       <td>23</td>
-      <td>821-00-0265</td>
       <td>Scientist</td>
       <td>19114.12</td>
       <td>NaN</td>
       <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
       <td>...</td>
       <td>Good</td>
       <td>809.98</td>
@@ -236,16 +251,16 @@ credit_score.head()
     </tr>
     <tr>
       <th>4</th>
-      <td>0x1606</td>
       <td>CUS_0xd40</td>
       <td>May</td>
-      <td>Aaron Maashoh</td>
       <td>23</td>
-      <td>821-00-0265</td>
       <td>Scientist</td>
       <td>19114.12</td>
       <td>1824.843333</td>
       <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
       <td>...</td>
       <td>Good</td>
       <td>809.98</td>
@@ -260,7 +275,7 @@ credit_score.head()
     </tr>
   </tbody>
 </table>
-<p>5 rows × 28 columns</p>
+<p>5 rows × 25 columns</p>
 </div>
 ```
 
@@ -268,128 +283,278 @@ credit_score.head()
 :::
 
 
-### Data Preprocessing
+## Data Preprocessing
 
-We prepared the data set for further analysis step by removing rows with missing values, transforming character variables into categorical/factor variables, and numeric variables and standardized it and removing outliers.
+We prepared the data set for further analysis step by transforming character variables into categorical/factor variables, and numeric variables, treating missing values, and standardized it and treating outliers.
+
+We have noticed there is some strange values like "_",  "!@9#%8",  "#F%$D@*&8" in dataset. You can check the coding part below for  details.
 
 ::: {.cell execution_count=3}
 ```` { .cell-code}
 ```{{python}}
-data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)
-data = data.dropna(axis=0, how='any')
-data["Month"] = data["Month"].astype("category")
-data['Age']=data['Age'].str.replace('_', '')
-data['Age']=data['Age'].astype('int')
-data=data.loc[(data['Age'] >= 15) & (data['Age'] <= 65)]
-data.Occupation=data.Occupation.astype('category')
-data['Annual_Income']=data['Annual_Income'].str.replace('_', '')
-data.Annual_Income=data.Annual_Income.astype('float')
-data['Num_of_Loan']=data['Num_of_Loan'].str.replace('_', '')
-data.Num_of_Loan=data.Num_of_Loan.astype('int')
-data=data.loc[(data['Num_of_Loan'] >= 0) & (data['Num_of_Loan'] <= 10)]
-data.Num_of_Loan = scale(data.Num_of_Loan)
-
-data['auto'] = np.where(data['Type_of_Loan'].str.contains("Auto"),1,0)
-data['debt_consolidation'] = np.where(data['Type_of_Loan'].str.contains("Debt Consolidation"),1,0)
-data['mortgage'] = np.where(data['Type_of_Loan'].str.contains("Mortgage"),1,0)
-data['home_equity'] = np.where(data['Type_of_Loan'].str.contains("Home Equity"),1,0)
-data['personal'] = np.where(data['Type_of_Loan'].str.contains("Personal"),1,0)
-data['student'] = np.where(data['Type_of_Loan'].str.contains("Student"),1,0)
-data['credit_builder'] = np.where(data['Type_of_Loan'].str.contains("Credit-Builder"),1,0)
-data['payday'] = np.where(data['Type_of_Loan'].str.contains("Payday"),1,0)
-data['not_specified'] = np.where(data['Type_of_Loan'].str.contains("Not Specified"),1,0)
-data=data.drop(['Type_of_Loan'], axis=1)
-
-data['Num_of_Delayed_Payment']=data['Num_of_Delayed_Payment'].str.replace('_', '')
-data.Num_of_Delayed_Payment=data.Num_of_Delayed_Payment.astype('int')
-data=data.loc[(data['Num_of_Delayed_Payment'] >= 0) & (data['Num_of_Delayed_Payment'] <= 30)]
-data.Num_of_Delayed_Payment = scale(data.Num_of_Delayed_Payment)
-data.Changed_Credit_Limit=pd.to_numeric(data.Changed_Credit_Limit, errors='coerce')
-data.Changed_Credit_Limit = scale(data.Changed_Credit_Limit)
-data.Num_Credit_Inquiries=pd.to_numeric(data.Num_Credit_Inquiries, errors='coerce')
-data=data.loc[(data['Num_Credit_Inquiries'] >= 0) & (data['Num_Credit_Inquiries'] <= 1060)]
-data.Num_Credit_Inquiries = scale(data.Num_Credit_Inquiries)
-data.Credit_Mix=data.Credit_Mix.astype('category')
-data.Outstanding_Debt=pd.to_numeric(data.Outstanding_Debt, errors='coerce')
-data.Outstanding_Debt = scale(data.Outstanding_Debt)
-data.Payment_of_Min_Amount=data.Payment_of_Min_Amount.astype('category')
-data.Amount_invested_monthly=pd.to_numeric(data.Amount_invested_monthly, errors='coerce')
-data.Amount_invested_monthly = scale(data.Amount_invested_monthly)
-data.Payment_Behaviour=data.Payment_Behaviour.astype('category')
-data.Monthly_Balance=pd.to_numeric(data.Monthly_Balance, errors='coerce')
-data.Monthly_Balance = scale(data.Monthly_Balance)
-data.Monthly_Inhand_Salary = scale(data.Monthly_Inhand_Salary)
-data.Delay_from_due_date = scale(data.Delay_from_due_date)
-data=data.loc[(data['Credit_Score'] !='Standard')]
-data.Credit_Score=data.Credit_Score.astype('category')
-data = data.dropna(axis=0, how='any')
-
-data['Credit_Score_num']=data.Credit_Score
-print(data.shape)
-data.head()
-lenght=len(data)
+def replace_weird(credit_score): # create function for remove _ syntax
+    if credit_score is np.NaN or not isinstance(credit_score, str):
+        return credit_score
+    else:
+        return str(credit_score).strip('_ ,"')
+credit_score = credit_score.applymap(replace_weird).replace(['', 'nan', '!@9#%8', '#F%$D@*&8'], np.NaN) # replace weird strings with na
 ```
 
 ````
-
-::: {.cell-output .cell-output-stdout}
-```
-(23022, 33)
-```
-:::
 :::
 
 
-After done the data preprocessing step we are left with `r lenght` observations. Then we divided the data set into training and testing sample by 7:3 ratio.
+### Treating Missing Data 
+
+Below we can see that there is quite many missing data in our dataset. Removing them would result significant drop in our number of datasets. So that we need to try treating it as much as we can.
 
 ::: {.cell execution_count=4}
 ```` { .cell-code}
 ```{{python}}
-data_test,data_train = train_test_split(data, test_size=0.7)
-print("Testing data set: \n", data_test.shape)
-print("Training data set: \n",data_train.shape)
+credit_score.isna().sum()
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=4}
+```
+Customer_ID                    0
+Month                          0
+Age                            0
+Occupation                  3274
+Annual_Income                  0
+Monthly_Inhand_Salary       7115
+Num_Bank_Accounts              0
+Num_Credit_Card                0
+Interest_Rate                  0
+Num_of_Loan                    0
+Type_of_Loan                4780
+Delay_from_due_date            0
+Num_of_Delayed_Payment      3257
+Changed_Credit_Limit        1000
+Num_Credit_Inquiries         902
+Credit_Mix                  9491
+Outstanding_Debt               0
+Credit_Utilization_Ratio       0
+Credit_History_Age          4206
+Payment_of_Min_Amount          0
+Total_EMI_per_month            0
+Amount_invested_monthly     2155
+Payment_Behaviour           3608
+Monthly_Balance              595
+Credit_Score                   0
+dtype: int64
+```
+:::
+:::
+
+
+Below shows that we have dataset which includes credit scoring history of 8'692 unique customers January to August.  Using Customer_Id, we can replace some feature's missing value of certain customers, if other values are not missing.
+
+::: {.cell execution_count=5}
+```` { .cell-code}
+```{{python}}
+num_customer= len(set(credit_score["Customer_ID"] ))
+print("Number of unique customer: ", num_customer)
+num_month= set(credit_score["Month"] )
+print("Number of month: ", num_month)
 ```
 
 ````
 
 ::: {.cell-output .cell-output-stdout}
 ```
-Testing data set: 
- (6906, 33)
-Training data set: 
- (16116, 33)
+Number of unique customer:  8692
+Number of month:  {'July', 'August', 'March', 'May', 'June', 'February', 'January', 'April'}
 ```
 :::
 :::
 
 
-## Data Exploration & Feature Selection
+For example, for Customer_ID=CUS_0x2dbc 3 of the value is missing. So instead of removing them we replaced the missing values with other most occured non missing value.
 
-::: {.cell execution_count=5}
+::: {.cell execution_count=6}
 ```` { .cell-code}
 ```{{python}}
-#| warning: false
-df_groups = data_train['Credit_Score'].value_counts()
-
-#create bar plot with custom aesthetics
-df_groups.plot(kind='bar', title='Credit Scoring',
-               ylabel='Count', xlabel='Category')
-
-#rotate x-axis ticks vertically
-plt.xticks(rotation=0)
+credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occupation'].apply(list)
 ```
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=65}
+::: {.cell-output .cell-output-display execution_count=6}
 ```
-(array([0, 1]), [Text(0, 0, 'Poor'), Text(1, 0, 'Good')])
+Customer_ID
+CUS_0x2dbc    [nan, Engineer, nan, Engineer, nan, Engineer]
+Name: Occupation, dtype: object
 ```
+:::
 :::
 
-::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-6-output-2.png){width=610 height=442}
+
+After replacing the missiong value of occupation, above example looks like this.
+
+::: {.cell execution_count=7}
+```` { .cell-code}
+```{{python}}
+credit_score['Occupation'] = credit_score['Occupation'].fillna(credit_score.groupby('Customer_ID')['Occupation'].transform(lambda x: x.fillna(stats.mode(x)[0][0])))
+credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occupation'].apply(list)
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=7}
+```
+Customer_ID
+CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
+Name: Occupation, dtype: object
+```
 :::
+:::
+
+
+With this method we also replaced missing values of categorical variables, Credit_Mix, Payment_Behaviour, Type_of_Loan.
+
+::: {.cell execution_count=8}
+```` { .cell-code}
+```{{python}}
+credit_score['Credit_Mix'] = credit_score['Credit_Mix'].fillna(credit_score.groupby('Customer_ID')['Credit_Mix'].transform(lambda x: x.fillna(stats.mode(x)[0][0])))
+credit_score['Payment_Behaviour'] = credit_score['Payment_Behaviour'].fillna(credit_score.groupby('Customer_ID')['Payment_Behaviour'].transform(lambda x: x.fillna(stats.mode(x)[0][0])))
+credit_score['Type_of_Loan'] = credit_score['Type_of_Loan'].fillna(credit_score.groupby('Customer_ID')['Type_of_Loan'].transform(lambda x: x.fillna(stats.mode(x)[0][0])))
+# for credit history age we replaced with pervious or next month's value
+credit_score['Credit_History_Age'] = credit_score.groupby('Customer_ID')['Credit_History_Age'].apply(lambda x: x.interpolate().bfill().ffill())
+```
+
+````
+:::
+
+
+As for numerical variables, we take average of other non missing values.
+
+::: {.cell execution_count=9}
+```` { .cell-code}
+```{{python}}
+credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num_of_Delayed_Payment'].apply(list)
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=9}
+```
+Customer_ID
+CUS_0x1018    [22, 22, 22, 20, nan, 22, 22, 22]
+Name: Num_of_Delayed_Payment, dtype: object
+```
+:::
+:::
+
+
+After replacing the missiong value of Num_of_Delayed_Payment, above example looks like this.
+
+::: {.cell execution_count=10}
+```` { .cell-code}
+```{{python}}
+credit_score['Num_of_Delayed_Payment'] = credit_score['Num_of_Delayed_Payment'].fillna(credit_score.groupby('Customer_ID')['Num_of_Delayed_Payment'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+
+credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num_of_Delayed_Payment'].apply(list)
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=10}
+```
+Customer_ID
+CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
+Name: Num_of_Delayed_Payment, dtype: object
+```
+:::
+:::
+
+
+And with this method, we do same for Monthly_Inhand_Salary, Changed_Credit_Limit, Num_Credit_Inquiries, Amount_invested_monthly, Monthly_Balance variables.
+
+::: {.cell execution_count=11}
+```` { .cell-code}
+```{{python}}
+credit_score['Monthly_Inhand_Salary'] = credit_score['Monthly_Inhand_Salary'].fillna(credit_score.groupby('Customer_ID')['Monthly_Inhand_Salary'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Changed_Credit_Limit'] = credit_score['Changed_Credit_Limit'].fillna(credit_score.groupby('Customer_ID')['Changed_Credit_Limit'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Num_Credit_Inquiries'] = credit_score['Num_Credit_Inquiries'].fillna(credit_score.groupby('Customer_ID')['Num_Credit_Inquiries'].transform(lambda x: x.fillna(x.mean())))
+credit_score['Amount_invested_monthly'] = credit_score['Amount_invested_monthly'].fillna(credit_score.groupby('Customer_ID')['Amount_invested_monthly'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+credit_score['Monthly_Balance'] = credit_score['Monthly_Balance'].fillna(credit_score.groupby('Customer_ID')['Monthly_Balance'].transform(lambda x: x.fillna(x.astype('float64').mean())))
+```
+
+````
+:::
+
+
+After missing value treatment we have now left with very few missing value.
+
+::: {.cell execution_count=12}
+```` { .cell-code}
+```{{python}}
+credit_score.isna().sum()
+```
+
+````
+
+::: {.cell-output .cell-output-display execution_count=12}
+```
+Customer_ID                  0
+Month                        0
+Age                          0
+Occupation                   0
+Annual_Income                0
+Monthly_Inhand_Salary       85
+Num_Bank_Accounts            0
+Num_Credit_Card              0
+Interest_Rate                0
+Num_of_Loan                  0
+Type_of_Loan                 0
+Delay_from_due_date          0
+Num_of_Delayed_Payment      33
+Changed_Credit_Limit         6
+Num_Credit_Inquiries         5
+Credit_Mix                   0
+Outstanding_Debt             0
+Credit_Utilization_Ratio     0
+Credit_History_Age          47
+Payment_of_Min_Amount        0
+Total_EMI_per_month          0
+Amount_invested_monthly     19
+Payment_Behaviour            0
+Monthly_Balance              9
+Credit_Score                 0
+dtype: int64
+```
+:::
+:::
+
+
+### Data type
+Here we are converting variables into suitable data types numeric or categorical.
+
+::: {.cell execution_count=13}
+```` { .cell-code}
+```{{python}}
+credit_score["Month"] = credit_score["Month"].astype("category")
+credit_score['Age']=credit_score['Age'].astype('int')
+credit_score.Occupation=credit_score.Occupation.astype('category')
+credit_score.Annual_Income=credit_score.Annual_Income.astype('float')
+credit_score.Monthly_Inhand_Salary=credit_score.Monthly_Inhand_Salary.astype('float')
+credit_score.Num_Bank_Accounts=credit_score.Num_Bank_Accounts.astype('float')
+credit_score.Num_Credit_Card=credit_score.Num_Credit_Card.astype('float')
+credit_score.Interest_Rate=credit_score.Interest_Rate.astype('float')
+credit_score.Num_of_Loan=credit_score.Num_of_Loan.astype('int')
+credit_score.Changed_Credit_Limit=pd.to_numeric(credit_score.Changed_Credit_Limit, errors='coerce')
+credit_score.Num_Credit_Inquiries=pd.to_numeric(credit_score.Num_Credit_Inquiries, errors='coerce')
+credit_score.Credit_Mix=credit_score.Credit_Mix.astype('category')
+credit_score.Outstanding_Debt=pd.to_numeric(credit_score.Outstanding_Debt, errors='coerce')
+credit_score.Payment_of_Min_Amount=credit_score.Payment_of_Min_Amount.astype('category')
+credit_score.Amount_invested_monthly=pd.to_numeric(credit_score.Amount_invested_monthly, errors='coerce')
+credit_score.Credit_Score=credit_score.Credit_Score.astype('category')
+credit_score.Monthly_Balance=pd.to_numeric(credit_score.Monthly_Balance, errors='coerce')
+```
+
+````
 :::
 
 
