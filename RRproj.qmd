@@ -29,7 +29,7 @@ Firstly, we describe the dataset used in our study. We obtained Credit scoring d
 
 Then, to find most relavant features to our model, we use correlation coefficients to decide if we include variable in model for numeric variables. For categorical variable we used ANOVA to asses if variable has association with credit scoring dependent variable.
 
-Next we use .... machine learning algorithms. We specify the hyperparameters, model training processes, to enable other researchesr to replicate our model development process.
+Next we use Random Forest, AdaBoosting, and Neural Network machine learning algorithms. We specify the hyperparameters, model training processes, to enable other researchesr to replicate our model development process.
 
 ##### Importing Neccessary Libraries
 
@@ -309,16 +309,6 @@ figure.tight_layout()
 plt.show()
 ```
 
-```{python}
-credit_score.isna().sum()
-#credit_score = credit_score.dropna(axis=0, how='any')
-
-print(credit_score.shape)
-credit_score.head()
-```
-
-
-
 
 #### Normalization & Other variables
 
@@ -376,11 +366,9 @@ print(credit_score.shape)
 credit_score.head()
 ```
 
-
 After done the data preprocessing step we are left with **44'111** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'233** observations and Training data set has **30'878** observations.
 
 ```{python}
-
 data_test,data_train = train_test_split(credit_score, test_size=0.7, random_state=123)
 print("Testing data set: \n", data_test.shape)
 print("Training data set: \n",data_train.shape)
@@ -391,53 +379,52 @@ print("Training data set: \n",data_train.shape)
 
 ```{python}
 #| warning: false
-df_groups = data_train['Credit_Score'].value_counts()
+f_groups = data_train['Credit_Score'].value_counts()
 
-#create bar plot with custom aesthetics
-df_groups.plot(kind='bar', title='Credit Scoring',
-               ylabel='Count', xlabel='Category')
+plt.figure(figsize=(8, 6))
+bar_plot = f_groups.plot(kind='bar', color='mediumturquoise', edgecolor='white')
+plt.title('Credit Scoring')
+plt.xlabel('Category')
+plt.ylabel('Count')
+for i, count in enumerate(f_groups):
+    bar_plot.text(i, count, str(count), ha='center', va='bottom')
 
-#rotate x-axis ticks vertically
-plt.xticks(rotation=0)
+plt.show()
 ```
 
 ```{python}
 ### Relationship between numerical variables
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-data_num = data.select_dtypes(include=numerics)
-num_cors=data_num.corr()
-print(num_cors)
+label_encoder = LabelEncoder()
+data_train['Credit_Score_num'] = label_encoder.fit_transform(data_train['Credit_Score'])
 
-### Relationship between categorical variables
-categor = ['category']
-data_cate = data.select_dtypes(include=categor)
+data_num = data_train.select_dtypes(include=numerics)
+num_cors=data_num.corr()
+correlation_with_dep = num_cors['Credit_Score_num']
+print(correlation_with_dep.sort_values(ascending=False) )
+#print(num_cors)
 
 ```
 
 ```{python}
-##### Data Prepare for Modeling
-data=data.drop(['Customer_ID','Type_of_Loan'], axis=1)
-data = pd.get_dummies(data, columns = ['Month','Occupation','Credit_Mix','Payment_of_Min_Amount']) # create dummy variable
-le = LabelEncoder() # create labeling
-data['Credit_Score']=le.fit_transform(data['Credit_Score']) # labeling target variable
-data=data.drop(['Credit_Mix_0','Occupation_0'], axis=1) # Remove column
 
-data_test,data_train = train_test_split(data, test_size=0.7) # Data split by 0.7
-data_train.Credit_Score.value_counts() # Group by count Target variable
+### Relationship between categorical variables
+categor = ['category']
+data_cate = data_train.select_dtypes(include=categor)
 
-def evaluate(model, test_features, test_labels): # function to calculate accuracy
-    predictions = model.predict(test_features)
-    errors = abs(predictions - test_labels)
-    mape = 100 * np.mean(errors / test_labels)
-    accuracy = 100 - mape
-    print('Model Performance')
-    print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
-    print('Accuracy = {:0.2f}%.'.format(accuracy))
-    return accuracy
+# Perform chi-square tests for each variable
+Var=[]
+Chisq=[]
+Pval=[]
+for var in data_cate:
+    
+    data_cate_ = pd.crosstab(data_cate['Credit_Score'], data_cate[var])
+    chi2, p_value, _, _ = stats.chi2_contingency(data_cate_)
 
-xtrain=data_train.drop(['Credit_Score'],axis=1) 
-ytrain=data_train['Credit_Score']
-xtest=data_test.drop(['Credit_Score'],axis=1)
-ytest=data_test['Credit_Score']
+    Var.append(var)
+    Chisq.append(chi2)
+    Pval.append(p_value)
 
+anova= pd.DataFrame({'Var': Var, 'Chisq': Chisq, 'Pval': Pval})
+anova.sort_values(by="Chisq",ascending=False)
 ```
