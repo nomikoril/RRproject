@@ -605,3 +605,4 @@ print("Accuracy of Test Dataset from Neural Network Model: \n", accuracy_score(y
 
 ## Conclusion
 
+In this project, we used 3 machine learning approaches to construct a credit scoring model and determine which model provides better prediction for credit scores. To uphold transparency, we detailed every steps we taken for data preprocessing. To identify relevant features to our model, we employed correlation coefficient for numeric variable, and ANOVA for categorical variables to determine relationships and associations. Lastly we employed Random Forest, Adaboost, Neural Network models. We specified the hyperparameters so that other researchers can replicate our model. Based on the model prediction, Random Forest and Neural Networking model was equally good for credit scoring. Adaboost was least predictive out of the 3 models. 
