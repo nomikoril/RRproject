@@ -309,6 +309,16 @@ figure.tight_layout()
 plt.show()
 ```
 
+```{python}
+credit_score.isna().sum()
+#credit_score = credit_score.dropna(axis=0, how='any')
+
+print(credit_score.shape)
+credit_score.head()
+```
+
+
+
 
 #### Normalization & Other variables
 
@@ -370,8 +380,8 @@ credit_score.head()
 After done the data preprocessing step we are left with **44'111** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'233** observations and Training data set has **30'878** observations.
 
 ```{python}
-data=credit_score
-data_test,data_train = train_test_split(data, test_size=0.7, random_state=123)
+
+data_test,data_train = train_test_split(credit_score, test_size=0.7, random_state=123)
 print("Testing data set: \n", data_test.shape)
 print("Training data set: \n",data_train.shape)
 
@@ -391,3 +401,43 @@ df_groups.plot(kind='bar', title='Credit Scoring',
 plt.xticks(rotation=0)
 ```
 
+```{python}
+### Relationship between numerical variables
+numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+data_num = data.select_dtypes(include=numerics)
+num_cors=data_num.corr()
+print(num_cors)
+
+### Relationship between categorical variables
+categor = ['category']
+data_cate = data.select_dtypes(include=categor)
+
+```
+
+```{python}
+##### Data Prepare for Modeling
+data=data.drop(['Customer_ID','Type_of_Loan'], axis=1)
+data = pd.get_dummies(data, columns = ['Month','Occupation','Credit_Mix','Payment_of_Min_Amount']) # create dummy variable
+le = LabelEncoder() # create labeling
+data['Credit_Score']=le.fit_transform(data['Credit_Score']) # labeling target variable
+data=data.drop(['Credit_Mix_0','Occupation_0'], axis=1) # Remove column
+
+data_test,data_train = train_test_split(data, test_size=0.7) # Data split by 0.7
+data_train.Credit_Score.value_counts() # Group by count Target variable
+
+def evaluate(model, test_features, test_labels): # function to calculate accuracy
+    predictions = model.predict(test_features)
+    errors = abs(predictions - test_labels)
+    mape = 100 * np.mean(errors / test_labels)
+    accuracy = 100 - mape
+    print('Model Performance')
+    print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
+    print('Accuracy = {:0.2f}%.'.format(accuracy))
+    return accuracy
+
+xtrain=data_train.drop(['Credit_Score'],axis=1) 
+ytrain=data_train['Credit_Score']
+xtest=data_test.drop(['Credit_Score'],axis=1)
+ytest=data_test['Credit_Score']
+
+```
