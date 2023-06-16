@@ -48,6 +48,13 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import scipy.stats as stats
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score
+import datetime
 ```
 
 ````
@@ -366,7 +373,7 @@ print("Number of month: ", num_month)
 ::: {.cell-output .cell-output-stdout}
 ```
 Number of unique customer:  8692
-Number of month:  {'February', 'June', 'April', 'July', 'March', 'August', 'January', 'May'}
+Number of month:  {'August', 'January', 'February', 'July', 'May', 'April', 'June', 'March'}
 ```
 :::
 :::
@@ -537,7 +544,6 @@ Here we are converting variables into suitable data types numeric or categorical
 ::: {.cell execution_count=13}
 ```` { .cell-code}
 ```{{python}}
-credit_score["Month"] = credit_score["Month"].astype("category")
 credit_score['Age']=credit_score['Age'].astype('int')
 credit_score.Occupation=credit_score.Occupation.astype('category')
 credit_score.Annual_Income=credit_score.Annual_Income.astype('float')
@@ -555,6 +561,7 @@ credit_score.Payment_of_Min_Amount=credit_score.Payment_of_Min_Amount.astype('ca
 credit_score.Amount_invested_monthly=pd.to_numeric(credit_score.Amount_invested_monthly, errors='coerce')
 credit_score.Credit_Score=credit_score.Credit_Score.astype('category')
 credit_score.Monthly_Balance=pd.to_numeric(credit_score.Monthly_Balance, errors='coerce')
+
 ```
 
 ````
@@ -562,7 +569,19 @@ credit_score.Monthly_Balance=pd.to_numeric(credit_score.Monthly_Balance, errors=
 
 
 #### Outlier Values
-We check each numeric values if there is any outliers or wrong values by drawing the histogram of it and treat it individually. We clearly see that in Age, Annual_Income, Num_Bank_Account, Num_Credit_Card, Interest_Rate, Num_of_Loan, Num_of_Delayed_Payment, Num_Credit_Inquiries, Total_EMI_per_month, Amount_invested_monthly, Monthly_Balance has outliers or wrong values in it. We will fix it by using 1 and 3rd quantiles to make outlier values NAN and treat it same as the missing values.  
+We check each numeric values if there is any outliers or wrong values by drawing the histogram of it and treat it individually. We clearly see below variabeles have outliers or wrong values in it. We will fix it by using 1 and 3rd quantiles to make outlier values NAN and treat it same as the missing values.  
+
+- Age, 
+- Annual_Income, 
+- Num_Bank_Account, 
+- Num_Credit_Card, 
+- Interest_Rate, 
+- Num_of_Loan, 
+- Num_of_Delayed_Payment, 
+- Num_Credit_Inquiries, 
+- Total_EMI_per_month, 
+- Amount_invested_monthly, 
+- Monthly_Balance 
 
 ::: {.cell execution_count=14}
 ```` { .cell-code}
@@ -581,17 +600,17 @@ plt.show()
 :::
 
 
-To get 1st and 3rd quantiles we will use below function.
+To identify the outliers in the data set we will use 1st and 3rd quantiles.
 
 ::: {.cell execution_count=15}
 ```` { .cell-code code-fold="false"}
 ```{{python}}
 #| code-fold: false
+# function to get 1st and 3rd quantiles
 def get_1_3_qr(credit_score, column, multiply=1.5):
     q1 = credit_score[column].quantile(0.25)
     q3 = credit_score[column].quantile(0.75)
     iqr = q3 -q1
-    
     lower = q1-iqr*multiply
     upper = q3+iqr*multiply
     print('Outlier band of', column, ":", lower, ";", upper)
@@ -601,14 +620,14 @@ def get_1_3_qr(credit_score, column, multiply=1.5):
 :::
 
 
-For age, we can tell than below 0 and above 67 should be outlier value and we make such value NAN and then treat it same as we did for missing values.
+Taking for example Age variable, we can tell than below 0 and above 69 should be outlier value and we convert such values to NAN and then treat it same as we did for missing values.
 
 ::: {.cell execution_count=16}
 ```` { .cell-code code-fold="false"}
 ```{{python}}
 #| code-fold: false
 get_1_3_qr(credit_score, 'Age', multiply=1.5)
-credit_score['Age']=credit_score['Age'].apply(lambda x: np.NaN if ((x<0)|(x>67)) else x)
+credit_score['Age']=credit_score['Age'].apply(lambda x: np.NaN if ((x<0)|(x>69)) else x)
 credit_score['Age'] = credit_score['Age'].fillna(credit_score.groupby('Customer_ID')['Age'].transform(lambda x: x.fillna(x.astype('float64').mean())))
 plt.hist(credit_score.Age, color = "mediumturquoise", edgecolor="white")
 plt.show()
@@ -667,10 +686,12 @@ Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436
 
 
 - Then replacing outlier variables with NAN:
+- Next we replace with mean value of each customers:
 
 ::: {.cell execution_count=18}
 ```` { .cell-code}
 ```{{python}}
+# Replacing with NAN
 credit_score['Annual_Income']=credit_score['Annual_Income'].apply(lambda x: np.NaN if ((x<0)|(x>149060)) else x)
 credit_score['Num_Bank_Accounts']=credit_score['Num_Bank_Accounts'].apply(lambda x: np.NaN if ((x<0)|(x>16)) else x)
 credit_score['Num_Credit_Inquiries']=credit_score['Num_Credit_Inquiries'].apply(lambda x: np.NaN if ((x<0)|(x>21)) else x)
@@ -681,17 +702,7 @@ credit_score['Num_Credit_Card']=credit_score['Num_Credit_Card'].apply(lambda x: 
 credit_score['Total_EMI_per_month']=credit_score['Total_EMI_per_month'].apply(lambda x: np.NaN if ((x<0)|(x>374)) else x)
 credit_score['Amount_invested_monthly']=credit_score['Amount_invested_monthly'].apply(lambda x: np.NaN if ((x<0)|(x>567)) else x)
 credit_score['Monthly_Balance']=credit_score['Monthly_Balance'].apply(lambda x: np.NaN if (x<0) else x)
-```
-
-````
-:::
-
-
-- Next we replace with mean value of each customers:
-
-::: {.cell execution_count=19}
-```` { .cell-code}
-```{{python}}
+# Replacing with mean value of customer
 credit_score['Annual_Income'] = credit_score['Annual_Income'].fillna(credit_score.groupby('Customer_ID')['Annual_Income'].transform(lambda x: x.fillna(x.astype('float64').mean())))
 credit_score['Num_Bank_Accounts'] = credit_score['Num_Bank_Accounts'].fillna(credit_score.groupby('Customer_ID')['Num_Bank_Accounts'].transform(lambda x: x.fillna(x.astype('float64').mean())))
 credit_score['Num_Credit_Inquiries'] = credit_score['Num_Credit_Inquiries'].fillna(credit_score.groupby('Customer_ID')['Num_Credit_Inquiries'].transform(lambda x: x.fillna(x.astype('float64').mean())))
@@ -710,7 +721,7 @@ credit_score['Monthly_Balance'] = credit_score['Monthly_Balance'].fillna(credit_
 
 - After treating the outliers, variables distribution looks like this
 
-::: {.cell execution_count=20}
+::: {.cell execution_count=19}
 ```` { .cell-code}
 ```{{python}}
 figure, axis = plt.subplots(4, 3, figsize=(12, 12))
@@ -749,17 +760,20 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-21-output-1.png){}
+![](RRproj_files/figure-html/cell-20-output-1.png){}
 :::
 :::
 
 
 #### Normalization & Other variables
+Other than treating missing or outlier values, we need to convert and change variables to make them appropriate for analsis.
 
-::: {.cell execution_count=21}
+See codes for further changes made to other individual variables.
+
+::: {.cell execution_count=20}
 ```` { .cell-code}
 ```{{python}}
-# substr month from date string data
+# For Credit_History_Age variable, we will interpret it as number of months rather than year and month.
 def Month_Converter(x): 
   if pd.notnull(x):
     num1 = int(x.split(' ')[0])
@@ -769,10 +783,12 @@ def Month_Converter(x):
     return x
 
 credit_score['Credit_History_Age'] = credit_score.Credit_History_Age.apply(lambda x: Month_Converter(x)).astype(float)
+# For Month, we interpreted it with numbers rather than month name
+credit_score["Month"] = [datetime.datetime.strptime(month, "%B").month for month in credit_score["Month"]]
 
+# For Type_of_Loan we created splitted it into each type of dummy variables
 credit_score['Type_of_Loan'] = credit_score['Type_of_Loan'].astype('str').apply(lambda x: x.lower().replace('and ', '').replace(', ', ',').strip() if pd.notna(x) else x)
 
-# Create dummy variable for each explanatory variables that includes more than 2 kind of value
 credit_score['auto'] = np.where(credit_score['Type_of_Loan'].str.contains("auto"),1,0)
 credit_score['debt_consolidation'] = np.where(credit_score['Type_of_Loan'].str.contains("debt"),1,0)
 credit_score['mortgage'] = np.where(credit_score['Type_of_Loan'].str.contains("mortgage"),1,0)
@@ -783,6 +799,27 @@ credit_score['credit_builder'] = np.where(credit_score['Type_of_Loan'].str.conta
 credit_score['payday'] = np.where(credit_score['Type_of_Loan'].str.contains("payday"),1,0)
 credit_score['not_specified'] = np.where(credit_score['Type_of_Loan'].str.contains("not specified"),1,0)
 
+credit_score = credit_score.drop('Type_of_Loan', axis=1)
+
+# Making Payment_Behaviour variable into 2 variable
+credit_score['Spent'] = credit_score['Payment_Behaviour'].str.split('_', expand=True)[0].astype('category')
+credit_score['Payment'] = credit_score['Payment_Behaviour'].str.split('_', expand=True)[2].astype('category')
+label_encoder = LabelEncoder()
+credit_score['Payment']=label_encoder.fit_transform(credit_score['Payment']) 
+credit_score['Spent']=label_encoder.fit_transform(credit_score['Spent']) 
+
+credit_score = credit_score.drop('Payment_Behaviour', axis=1)
+```
+
+````
+:::
+
+
+Then we normalized the numeric variables.
+
+::: {.cell execution_count=21}
+```` { .cell-code}
+```{{python}}
 # Normalization
 credit_score.Annual_Income = scale(credit_score.Annual_Income)
 credit_score.Monthly_Inhand_Salary = scale(credit_score.Monthly_Inhand_Salary)
@@ -800,9 +837,6 @@ credit_score.Credit_History_Age = scale(credit_score.Credit_History_Age)
 credit_score.Total_EMI_per_month = scale(credit_score.Total_EMI_per_month)
 credit_score.Amount_invested_monthly = scale(credit_score.Amount_invested_monthly)
 credit_score.Monthly_Balance = scale(credit_score.Monthly_Balance)
-
-credit_score['Spent'] = credit_score['Payment_Behaviour'].str.split('_', expand=True)[0].astype('category')
-credit_score['Payment'] = credit_score['Payment_Behaviour'].str.split('_', expand=True)[2].astype('category')
 ```
 
 ````
@@ -812,6 +846,8 @@ credit_score['Payment'] = credit_score['Payment_Behaviour'].str.split('_', expan
 ::: {.cell execution_count=22}
 ```` { .cell-code}
 ```{{python}}
+credit_score['Credit_Score']=label_encoder.fit_transform(credit_score['Credit_Score']) 
+# Remove missing values, we couldn't treat
 credit_score = credit_score.dropna(axis=0, how='any')
 
 print(credit_score.shape)
@@ -822,7 +858,7 @@ credit_score.head()
 
 ::: {.cell-output .cell-output-stdout}
 ```
-(44111, 36)
+(44137, 34)
 ```
 :::
 
@@ -874,7 +910,7 @@ credit_score.head()
     <tr>
       <th>0</th>
       <td>CUS_0xd40</td>
-      <td>January</td>
+      <td>1</td>
       <td>23.0</td>
       <td>Scientist</td>
       <td>-0.801448</td>
@@ -892,13 +928,13 @@ credit_score.head()
       <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>High</td>
-      <td>Small</td>
+      <td>0</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>1</th>
       <td>CUS_0xd40</td>
-      <td>February</td>
+      <td>2</td>
       <td>23.0</td>
       <td>Scientist</td>
       <td>-0.801448</td>
@@ -916,13 +952,13 @@ credit_score.head()
       <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>Low</td>
-      <td>Large</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>2</th>
       <td>CUS_0xd40</td>
-      <td>March</td>
+      <td>3</td>
       <td>23.0</td>
       <td>Scientist</td>
       <td>-0.801448</td>
@@ -940,13 +976,13 @@ credit_score.head()
       <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>Low</td>
-      <td>Medium</td>
+      <td>1</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>3</th>
       <td>CUS_0xd40</td>
-      <td>April</td>
+      <td>4</td>
       <td>23.0</td>
       <td>Scientist</td>
       <td>-0.801448</td>
@@ -964,13 +1000,13 @@ credit_score.head()
       <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>Low</td>
-      <td>Small</td>
+      <td>1</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>4</th>
       <td>CUS_0xd40</td>
-      <td>May</td>
+      <td>5</td>
       <td>23.0</td>
       <td>Scientist</td>
       <td>-0.801448</td>
@@ -988,12 +1024,12 @@ credit_score.head()
       <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>High</td>
-      <td>Medium</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 36 columns</p>
+<p>5 rows × 34 columns</p>
 </div>
 ```
 
@@ -1001,7 +1037,7 @@ credit_score.head()
 :::
 
 
-After done the data preprocessing step we are left with **44'111** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'233** observations and Training data set has **30'878** observations.
+After done the data preprocessing steps we are left with **44'137** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'241** observations and Training data set has **30'896** observations.
 
 ::: {.cell execution_count=23}
 ```` { .cell-code}
@@ -1016,15 +1052,17 @@ print("Training data set: \n",data_train.shape)
 ::: {.cell-output .cell-output-stdout}
 ```
 Testing data set: 
- (13233, 36)
+ (13241, 34)
 Training data set: 
- (30878, 36)
+ (30896, 34)
 ```
 :::
 :::
 
 
 ## Data Exploration & Feature Selection
+
+In the training dataset, we have 63% of Poor Category and 37% of Good category. Data set is not that imbalanced. So that we will not use sampling methods.
 
 ::: {.cell execution_count=24}
 ```` { .cell-code}
@@ -1051,62 +1089,68 @@ plt.show()
 :::
 
 
+For features of the model, we considered Correlation matrix and Anova to select most correlated and associated variables.
+
+#### Relationship numerical variables
+Except for the Month, and Credit_Utilization_Ratio variables every numeric variable has slight to medium relationship with dependent variable. No high correlation is occured. We will exclude Month and Credit_Utilization_Ratio variables from model.
+
 ::: {.cell execution_count=25}
 ```` { .cell-code}
 ```{{python}}
-### Relationship between numerical variables
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-label_encoder = LabelEncoder()
-data_train['Credit_Score_num'] = label_encoder.fit_transform(data_train['Credit_Score'])
 
 data_num = data_train.select_dtypes(include=numerics)
 num_cors=data_num.corr()
-correlation_with_dep = num_cors['Credit_Score_num']
+correlation_with_dep = num_cors['Credit_Score']
 print(correlation_with_dep.sort_values(ascending=False) )
-#print(num_cors)
 ```
 
 ````
 
 ::: {.cell-output .cell-output-stdout}
 ```
-Credit_Score_num            1.000000
-Interest_Rate               0.629601
-Num_Credit_Inquiries        0.585747
-Delay_from_due_date         0.548948
-Outstanding_Debt            0.539043
-Num_Bank_Accounts           0.536279
-Num_Credit_Card             0.529956
-Num_of_Delayed_Payment      0.518052
-Num_of_Loan                 0.496633
-Changed_Credit_Limit        0.294127
-auto                        0.213212
-payday                      0.199547
-personal                    0.197134
-student                     0.196599
-credit_builder              0.195619
-debt_consolidation          0.193612
-mortgage                    0.191943
-home_equity                 0.189507
-not_specified               0.179436
-Total_EMI_per_month         0.119016
-Credit_Utilization_Ratio   -0.054721
-Amount_invested_monthly    -0.152664
-Age                        -0.244593
-Monthly_Inhand_Salary      -0.283610
-Annual_Income              -0.286836
-Monthly_Balance            -0.293275
-Credit_History_Age         -0.569165
-Name: Credit_Score_num, dtype: float64
+Credit_Score                1.000000
+Interest_Rate               0.630503
+Num_Credit_Inquiries        0.585765
+Delay_from_due_date         0.551923
+Num_Bank_Accounts           0.538719
+Outstanding_Debt            0.537738
+Num_Credit_Card             0.536354
+Num_of_Delayed_Payment      0.519820
+Num_of_Loan                 0.496401
+Changed_Credit_Limit        0.293260
+auto                        0.210494
+personal                    0.203107
+payday                      0.196844
+mortgage                    0.195386
+credit_builder              0.194996
+debt_consolidation          0.193754
+home_equity                 0.191103
+student                     0.188193
+not_specified               0.178540
+Spent                       0.144134
+Payment                     0.131775
+Total_EMI_per_month         0.114227
+Month                      -0.023726
+Credit_Utilization_Ratio   -0.060603
+Amount_invested_monthly    -0.155742
+Age                        -0.244833
+Monthly_Inhand_Salary      -0.284578
+Annual_Income              -0.287677
+Monthly_Balance            -0.293342
+Credit_History_Age         -0.565886
+Name: Credit_Score, dtype: float64
 ```
 :::
 :::
 
 
+#### Relationship between categorical variables
+For categorical variables, all variables have significant association with dependent variable. 
+
 ::: {.cell execution_count=26}
 ```` { .cell-code}
 ```{{python}}
-### Relationship between categorical variables
 categor = ['category']
 data_cate = data_train.select_dtypes(include=categor)
 
@@ -1116,7 +1160,7 @@ Chisq=[]
 Pval=[]
 for var in data_cate:
     
-    data_cate_ = pd.crosstab(data_cate['Credit_Score'], data_cate[var])
+    data_cate_ = pd.crosstab(data_train['Credit_Score'], data_cate[var])
     chi2, p_value, _, _ = stats.chi2_contingency(data_cate_)
 
     Var.append(var)
@@ -1157,46 +1201,22 @@ anova.sort_values(by="Chisq",ascending=False)
   </thead>
   <tbody>
     <tr>
-      <th>4</th>
-      <td>Credit_Score</td>
-      <td>30873.694581</td>
+      <th>1</th>
+      <td>Credit_Mix</td>
+      <td>14530.692193</td>
       <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>Credit_Mix</td>
-      <td>14482.796944</td>
-      <td>0.000000e+00</td>
-    </tr>
-    <tr>
-      <th>3</th>
       <td>Payment_of_Min_Amount</td>
-      <td>12799.078335</td>
+      <td>12817.402795</td>
       <td>0.000000e+00</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Spent</td>
-      <td>665.184442</td>
-      <td>1.113916e-146</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Payment</td>
-      <td>559.343493</td>
-      <td>3.468196e-122</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Occupation</td>
-      <td>85.946135</td>
-      <td>5.622226e-12</td>
     </tr>
     <tr>
       <th>0</th>
-      <td>Month</td>
-      <td>32.170849</td>
-      <td>3.775810e-05</td>
+      <td>Occupation</td>
+      <td>72.440339</td>
+      <td>1.635952e-09</td>
     </tr>
   </tbody>
 </table>
@@ -1206,4 +1226,214 @@ anova.sort_values(by="Chisq",ascending=False)
 :::
 :::
 
+
+## Models
+Now that we have cleaned and analyzed which variables have relationships and associations with dependent variable, we will build our machine learning models on the training dataset and validate and compare them with Accuracy on testing dataset. Before that we have 3 variables with more than 2 categories, we will make this variable into multiple dummy variables.
+
+::: {.cell execution_count=27}
+```` { .cell-code}
+```{{python}}
+# Making categorical variables into multiple dummies
+data_train = pd.get_dummies(data_train, columns = ['Occupation','Credit_Mix','Payment_of_Min_Amount'])
+data_test = pd.get_dummies(data_test, columns = ['Occupation','Credit_Mix','Payment_of_Min_Amount'])
+
+# also we need to drop some unneccessary variables
+columns_to_drop = ['Customer_ID', 'Month', 'Credit_Utilization_Ratio']
+
+# Drop the specified columns
+data_train = data_train.drop(columns_to_drop, axis=1)
+data_test = data_test.drop(columns_to_drop, axis=1)
+```
+
+````
+:::
+
+
+Then we need to split dependent and independent variables into separate tables.
+
+::: {.cell execution_count=28}
+```` { .cell-code}
+```{{python}}
+xtrain=data_train.drop(['Credit_Score'],axis=1) 
+ytrain=data_train['Credit_Score']
+xtest=data_test.drop(['Credit_Score'],axis=1)
+ytest=data_test['Credit_Score']
+```
+
+````
+:::
+
+
+As mentioned we will use Accuracy value to validate and compare the results of models
+
+::: {.cell execution_count=29}
+```` { .cell-code}
+```{{python}}
+# function to calculate accuracy
+def evaluate(model, test_features, test_labels): 
+  predictions = model.predict(test_features)
+  errors = abs(predictions - test_labels)
+  mape = 100 * np.mean(errors / test_labels)
+  accuracy = 100 - mape
+  print('Model Performance')
+  print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
+  print('Accuracy = {:0.2f}%.'.format(accuracy))
+  return accuracy
+```
+
+````
+:::
+
+
+### Models tabset
+::: {.panel-tabset}
+
+#### Random Forest Model
+
+::: {.cell execution_count=30}
+```` { .cell-code}
+```{{python}}
+rfc=RandomForestClassifier(random_state=123) # train model
+param_grid = {  # grid search space
+    'n_estimators': [10, 20],
+    'max_features': ['sqrt', 'log2'],
+    'max_depth' : [3,6],
+    'criterion' :['gini', 'entropy']
+}
+CV_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv= 5) # cross validtion
+CV_rfc.fit(xtrain, ytrain) # train model using train set
+best_params_=CV_rfc.best_params_ # best hyperparameters
+print("Best Hyperparameter Choosen: \n",best_params_)
+rfc1=RandomForestClassifier(random_state=42,  # train model with hyperparameters
+                            max_features=CV_rfc.best_estimator_.max_features,
+                            n_estimators= CV_rfc.best_estimator_.n_estimators, 
+                            max_depth=CV_rfc.best_estimator_.max_depth, 
+                            criterion=CV_rfc.best_estimator_.criterion)
+rfc1.fit(xtrain, ytrain.values.ravel()) # train model with train set
+pred=rfc1.predict(xtest) # predict test target value
+
+print("Accuracy of Test Dataset from Random Forest Model")
+accuracy_score(ytest,pred) # accuracy
+```
+
+````
+
+::: {.cell-output .cell-output-stdout}
+```
+Best Hyperparameter Choosen: 
+ {'criterion': 'gini', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
+Accuracy of Test Dataset from Random Forest Model
+```
+:::
+
+::: {.cell-output .cell-output-display execution_count=30}
+```
+0.870855675553206
+```
+:::
+:::
+
+
+#### AdaBoost
+
+::: {.cell execution_count=31}
+```` { .cell-code}
+```{{python}}
+adb=AdaBoostClassifier(random_state=123) # train model
+param_grid = {  # grid search space
+    'n_estimators': [10, 20,30],
+    'learning_rate': [0.01,0.1]
+}
+CV_adb = GridSearchCV(estimator=adb, param_grid=param_grid, cv= 5) # cross validation
+CV_adb.fit(xtrain, ytrain.values.ravel()) # train model using train set
+best_params_=CV_adb.best_params_ # best hyperparameters
+print("Best Hyperparameter Choosen: \n", best_params_)
+adb=AdaBoostClassifier(random_state=42,  # train model with hyperparameters
+                            learning_rate=CV_adb.best_estimator_.learning_rate,
+                            n_estimators= CV_adb.best_estimator_.n_estimators)
+adb.fit(xtrain, ytrain.values.ravel()) # train mdel with train set
+pred=adb.predict(xtest) # predict test target value
+print("Accuracy of Test Dataset from AdaBoost Model")
+accuracy_score(ytest,pred) # accuracy
+```
+
+````
+
+::: {.cell-output .cell-output-stdout}
+```
+Best Hyperparameter Choosen: 
+ {'learning_rate': 0.1, 'n_estimators': 30}
+Accuracy of Test Dataset from AdaBoost Model
+```
+:::
+
+::: {.cell-output .cell-output-display execution_count=31}
+```
+0.8434408277320444
+```
+:::
+:::
+
+
+#### Neural Network
+
+::: {.cell execution_count=32}
+```` { .cell-code}
+```{{python}}
+nnm=MLPClassifier(random_state=123) # train model
+param_grid = { # grid search space
+    'hidden_layer_sizes': [(50,30,30)],
+    'max_iter': [1, 3, 5],
+    'activation': ['tanh', 'relu'],
+    'solver': ['sgd', 'adam'],
+    'alpha': [0.01, 0.05,0.001],
+    'learning_rate': ['constant','adaptive'],
+}
+CV_nnm = GridSearchCV(nnm, param_grid, n_jobs= -1, cv=5) # cross validation
+CV_nnm.fit(xtrain, ytrain.values.ravel()) # train model using train set
+best_params_=CV_nnm.best_params_ # best hyperparameters
+print("Best Hyperparameter Choosen: \n", best_params_)
+nnm=MLPClassifier(random_state=42,  # train model with best hyperprameters
+                   hidden_layer_sizes=CV_nnm.best_estimator_.hidden_layer_sizes,
+                   activation=CV_nnm.best_estimator_.activation,
+                   solver=CV_nnm.best_estimator_.solver,
+                   max_iter=CV_nnm.best_estimator_.max_iter)
+nnm.fit(xtrain, ytrain.values.ravel()) # train model with train set
+pred=nnm.predict(xtest) # predict test target value
+print("Accuracy of Test Dataset from Neural Network Model")
+accuracy_score(ytest,pred) # accuracy
+```
+
+````
+
+::: {.cell-output .cell-output-stderr}
+```
+C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
+
+Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
+
+C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
+
+Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
+
+```
+:::
+
+::: {.cell-output .cell-output-stdout}
+```
+Best Hyperparameter Choosen: 
+ {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (50, 30, 30), 'learning_rate': 'constant', 'max_iter': 5, 'solver': 'adam'}
+Accuracy of Test Dataset from Neural Network Model
+```
+:::
+
+::: {.cell-output .cell-output-display execution_count=32}
+```
+0.8719885205044936
+```
+:::
+:::
+
+
+:::
 
