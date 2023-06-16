@@ -309,20 +309,6 @@ figure.tight_layout()
 plt.show()
 ```
 
-```{python}
-credit_score.isna().sum()
-<<<<<<< HEAD
-#credit_score = credit_score.dropna(axis=0, how='any')
-
-print(credit_score.shape)
-credit_score.head()
-=======
->>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
-```
-
-
-
-<<<<<<< HEAD
 
 #### Normalization & Other variables
 
@@ -382,9 +368,6 @@ credit_score.head()
 
 
 After done the data preprocessing step we are left with **44'111** observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has **13'233** observations and Training data set has **30'878** observations.
-=======
-After done the data preprocessing step we are left with 23'022 observations. Then we divided the data set into training and testing sample by 7:3 ratio. Testing data set has 6'906 observations and Training data set has 16'116 observations.
->>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
 
 ```{python}
 data=credit_score
@@ -408,13 +391,3 @@ df_groups.plot(kind='bar', title='Credit Scoring',
 plt.xticks(rotation=0)
 ```
 
-<<<<<<< HEAD
-=======
-
-```{python}
-#data=credit_score.drop(['ID','Customer_ID','Name','SSN'], axis=1)
-#data = data.dropna(axis=0, how='any')
-#data.shape
-```
-
->>>>>>> 15c35fa9b6d4c9a98267c3a2b166001ecd7f1ba1
