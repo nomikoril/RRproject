@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Joachim Ndhokero- 4408804 and Nomin Batbayar - 442627">
-<meta name="dcterms.date" content="2023-06-16">
+<meta name="dcterms.date" content="2023-06-17">
 
 <title>Credit Scoring Classification Analysis</title>
 <style>
@@ -98,7 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 16, 2023</p>
+        <p class="date">June 17, 2023</p>
       </div>
     </div>
     
@@ -121,8 +121,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#data-exploration-feature-selection" id="toc-data-exploration-feature-selection" class="nav-link" data-scroll-target="#data-exploration-feature-selection">Data Exploration &amp; Feature Selection</a></li>
   <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models">Models</a>
   <ul class="collapse">
-  <li><a href="#models-tabset" id="toc-models-tabset" class="nav-link" data-scroll-target="#models-tabset">Models tabset</a></li>
+  <li><a href="#model-estimation" id="toc-model-estimation" class="nav-link" data-scroll-target="#model-estimation">Model Estimation</a></li>
   </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </div>
@@ -217,7 +218,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>(46826, 25)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <div>
 
 
@@ -405,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>credit_score.isna().<span class="bu">sum</span>()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <pre><code>Customer_ID                    0
 Month                          0
 Age                            0
@@ -447,7 +448,7 @@ dtype: int64</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of unique customer:  8692
-Number of month:  {'August', 'January', 'February', 'July', 'May', 'April', 'June', 'March'}</code></pre>
+Number of month:  {'May', 'August', 'June', 'April', 'March', 'July', 'January', 'February'}</code></pre>
 </div>
 </div>
 <p>For example, for Customer_ID=CUS_0x2dbc 3 of the value is missing. So instead of removing them we replaced the missing values with other most occured non missing value.</p>
@@ -458,7 +459,7 @@ Number of month:  {'August', 'January', 'February', 'July', 'May', 'April', 'Jun
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>Customer_ID
 CUS_0x2dbc    [nan, Engineer, nan, Engineer, nan, Engineer]
 Name: Occupation, dtype: object</code></pre>
@@ -471,7 +472,7 @@ Name: Occupation, dtype: object</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Occupation'</span>] <span class="op">=</span> credit_score[<span class="st">'Occupation'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].transform(<span class="kw">lambda</span> x: x.fillna(stats.mode(x)[<span class="dv">0</span>][<span class="dv">0</span>])))</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x2dbc'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Occupation'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="39">
 <pre><code>Customer_ID
 CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
 Name: Occupation, dtype: object</code></pre>
@@ -498,7 +499,7 @@ Name: Occupation, dtype: object</code></pre>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x1018'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <pre><code>Customer_ID
 CUS_0x1018    [22, 22, 22, 20, nan, 22, 22, 22]
 Name: Num_of_Delayed_Payment, dtype: object</code></pre>
@@ -511,7 +512,7 @@ Name: Num_of_Delayed_Payment, dtype: object</code></pre>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>credit_score[<span class="st">'Num_of_Delayed_Payment'</span>] <span class="op">=</span> credit_score[<span class="st">'Num_of_Delayed_Payment'</span>].fillna(credit_score.groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].transform(<span class="kw">lambda</span> x: x.fillna(x.astype(<span class="st">'float64'</span>).mean())))</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>credit_score[credit_score.Customer_ID<span class="op">==</span><span class="st">'CUS_0x1018'</span>].groupby(<span class="st">'Customer_ID'</span>)[<span class="st">'Num_of_Delayed_Payment'</span>].<span class="bu">apply</span>(<span class="bu">list</span>)</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="42">
 <pre><code>Customer_ID
 CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
 Name: Num_of_Delayed_Payment, dtype: object</code></pre>
@@ -538,7 +539,7 @@ Name: Num_of_Delayed_Payment, dtype: object</code></pre>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>credit_score.isna().<span class="bu">sum</span>()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <pre><code>Customer_ID                  0
 Month                        0
 Age                          0
@@ -623,7 +624,7 @@ dtype: int64</code></pre>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+<p><img src="RRproj_files/figure-html/cell-15-output-1.png" width="826" height="803"></p>
 </div>
 </div>
 <p>To identify the outliers in the data set we will use 1st and 3rd quantiles.</p>
@@ -654,7 +655,7 @@ dtype: int64</code></pre>
 <pre><code>Outlier band of Age : -3.0 ; 69.0</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
+<p><img src="RRproj_files/figure-html/cell-17-output-2.png" width="583" height="404"></p>
 </div>
 </div>
 <p>And we fixed the other variables with outliers using the same method.</p>
@@ -764,7 +765,7 @@ Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436</code>
 <span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+<p><img src="RRproj_files/figure-html/cell-20-output-1.png" width="1142" height="1142"></p>
 </div>
 </div>
 </section>
@@ -855,7 +856,7 @@ Outlier band of Monthly_Balance : -21.159846598012678 ; 744.2067826197436</code>
 <div class="cell-output cell-output-stdout">
 <pre><code>(44137, 34)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="54">
 <div>
 
 
@@ -1056,7 +1057,7 @@ Training data set:
 <span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="RRproj_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+<p><img src="RRproj_files/figure-html/cell-25-output-1.png" width="684" height="510"></p>
 </div>
 </div>
 <p>For features of the model, we considered Correlation matrix and Anova to select most correlated and associated variables.</p>
@@ -1095,8 +1096,8 @@ debt_consolidation          0.193754
 home_equity                 0.191103
 student                     0.188193
 not_specified               0.178540
-Spent                       0.144134
-Payment                     0.131775
+Spent                       0.144263
+Payment                     0.132471
 Total_EMI_per_month         0.114227
 Month                      -0.023726
 Credit_Utilization_Ratio   -0.060603
@@ -1137,7 +1138,7 @@ Name: Credit_Score, dtype: float64</code></pre>
 <span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>anova.sort_values(by<span class="op">=</span><span class="st">"Chisq"</span>,ascending<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="58">
 <div>
 
 
@@ -1227,8 +1228,8 @@ Name: Credit_Score, dtype: float64</code></pre>
 <span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="models-tabset" class="level3">
-<h3 class="anchored" data-anchor-id="models-tabset">Models tabset</h3>
+<section id="model-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="model-estimation">Model Estimation</h3>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Random Forest Model</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">AdaBoost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Neural Network</a></li></ul>
 <div class="tab-content">
@@ -1237,36 +1238,41 @@ Name: Credit_Score, dtype: float64</code></pre>
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>rfc<span class="op">=</span>RandomForestClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {  <span class="co"># grid search space</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: [<span class="dv">10</span>, <span class="dv">20</span>],</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_features'</span>: [<span class="st">'sqrt'</span>, <span class="st">'log2'</span>],</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_depth'</span> : [<span class="dv">3</span>,<span class="dv">6</span>],</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'criterion'</span> :[<span class="st">'gini'</span>, <span class="st">'entropy'</span>]</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>CV_rfc <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>rfc, param_grid<span class="op">=</span>param_grid, cv<span class="op">=</span> <span class="dv">5</span>) <span class="co"># cross validtion</span></span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>CV_rfc.fit(xtrain, ytrain) <span class="co"># train model using train set</span></span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_rfc.best_params_ <span class="co"># best hyperparameters</span></span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>,best_params_)</span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>rfc1<span class="op">=</span>RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with hyperparameters</span></span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>                            max_features<span class="op">=</span>CV_rfc.best_estimator_.max_features,</span>
-<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>                            n_estimators<span class="op">=</span> CV_rfc.best_estimator_.n_estimators, </span>
-<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>                            max_depth<span class="op">=</span>CV_rfc.best_estimator_.max_depth, </span>
-<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>                            criterion<span class="op">=</span>CV_rfc.best_estimator_.criterion)</span>
-<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>rfc1.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model with train set</span></span>
-<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>rfc1.predict(xtest) <span class="co"># predict test target value</span></span>
-<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from Random Forest Model"</span>)</span>
-<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>accuracy_score(ytest,pred) <span class="co"># accuracy</span></span>
-<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>rfc<span class="op">=</span>RandomForestClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {  <span class="co"># grid search space</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: [<span class="dv">10</span>, <span class="dv">20</span>],</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_features'</span>: [<span class="st">'sqrt'</span>, <span class="st">'log2'</span>],</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_depth'</span> : [<span class="dv">3</span>,<span class="dv">6</span>],</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'criterion'</span> :[<span class="st">'gini'</span>, <span class="st">'entropy'</span>]</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"HyperParameter Search Space: </span><span class="ch">\n</span><span class="st">"</span>,param_grid)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>CV_rfc <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>rfc, param_grid<span class="op">=</span>param_grid, cv<span class="op">=</span> <span class="dv">5</span>) <span class="co"># cross validtion</span></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>CV_rfc.fit(xtrain, ytrain) <span class="co"># train model using train set</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_rfc.best_params_ <span class="co"># best hyperparameters</span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>, best_params_)</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>rfc1<span class="op">=</span>RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with hyperparameters</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>                            max_features<span class="op">=</span>CV_rfc.best_estimator_.max_features,</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>                            n_estimators<span class="op">=</span> CV_rfc.best_estimator_.n_estimators, </span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a>                            max_depth<span class="op">=</span>CV_rfc.best_estimator_.max_depth, </span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>                            criterion<span class="op">=</span>CV_rfc.best_estimator_.criterion)</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>rfc1.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model with train set</span></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>rfc1.predict(xtest) <span class="co"># predict test target value</span></span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from Random Forest Model: </span><span class="ch">\n</span><span class="st">"</span>, accuracy_score(ytest,pred))</span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy_score(ytest,pred) # accuracy</span></span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Best Hyperparameter Choosen: 
+<pre><code>HyperParameter Search Space: 
+ {'n_estimators': [10, 20], 'max_features': ['sqrt', 'log2'], 'max_depth': [3, 6], 'criterion': ['gini', 'entropy']}
+Optimal Hyperparameter Choosen: 
  {'criterion': 'gini', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
-Accuracy of Test Dataset from Random Forest Model</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="30">
-<pre><code>0.870855675553206</code></pre>
+Accuracy of Test Dataset from Random Forest Model: 
+ 0.8691186466278982</code></pre>
 </div>
 </div>
 </div>
@@ -1274,32 +1280,35 @@ Accuracy of Test Dataset from Random Forest Model</code></pre>
 <div class="cell" data-execution_count="31">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>adb<span class="op">=</span>AdaBoostClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {  <span class="co"># grid search space</span></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: [<span class="dv">10</span>, <span class="dv">20</span>,<span class="dv">30</span>],</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: [<span class="fl">0.01</span>,<span class="fl">0.1</span>]</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>CV_adb <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>adb, param_grid<span class="op">=</span>param_grid, cv<span class="op">=</span> <span class="dv">5</span>) <span class="co"># cross validation</span></span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>CV_adb.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model using train set</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_adb.best_params_ <span class="co"># best hyperparameters</span></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>, best_params_)</span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>adb<span class="op">=</span>AdaBoostClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with hyperparameters</span></span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>                            learning_rate<span class="op">=</span>CV_adb.best_estimator_.learning_rate,</span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>                            n_estimators<span class="op">=</span> CV_adb.best_estimator_.n_estimators)</span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>adb.fit(xtrain, ytrain.values.ravel()) <span class="co"># train mdel with train set</span></span>
-<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>adb.predict(xtest) <span class="co"># predict test target value</span></span>
-<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from AdaBoost Model"</span>)</span>
-<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>accuracy_score(ytest,pred) <span class="co"># accuracy</span></span>
-<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>adb<span class="op">=</span>AdaBoostClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {  <span class="co"># grid search space</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: [<span class="dv">10</span>, <span class="dv">20</span>,<span class="dv">30</span>],</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: [<span class="fl">0.01</span>,<span class="fl">0.1</span>]</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"HyperParameter Search Space: </span><span class="ch">\n</span><span class="st">"</span>,param_grid)</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>CV_adb <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>adb, param_grid<span class="op">=</span>param_grid, cv<span class="op">=</span> <span class="dv">5</span>) <span class="co"># cross validation</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>CV_adb.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model using train set</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_adb.best_params_ <span class="co"># best hyperparameters</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>, best_params_)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>adb<span class="op">=</span>AdaBoostClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with hyperparameters</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>                            learning_rate<span class="op">=</span>CV_adb.best_estimator_.learning_rate,</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>                            n_estimators<span class="op">=</span> CV_adb.best_estimator_.n_estimators)</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>adb.fit(xtrain, ytrain.values.ravel()) <span class="co"># train mdel with train set</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>adb.predict(xtest) <span class="co"># predict test target value</span></span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from AdaBoost Model: </span><span class="ch">\n</span><span class="st">"</span>, accuracy_score(ytest,pred))</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a> <span class="co"># accuracy</span></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Best Hyperparameter Choosen: 
+<pre><code>HyperParameter Search Space: 
+ {'n_estimators': [10, 20, 30], 'learning_rate': [0.01, 0.1]}
+Best Hyperparameter Choosen: 
  {'learning_rate': 0.1, 'n_estimators': 30}
-Accuracy of Test Dataset from AdaBoost Model</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>0.8434408277320444</code></pre>
+Accuracy of Test Dataset from AdaBoost Model: 
+ 0.8434408277320444</code></pre>
 </div>
 </div>
 </div>
@@ -1307,54 +1316,52 @@ Accuracy of Test Dataset from AdaBoost Model</code></pre>
 <div class="cell" data-execution_count="32">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>nnm<span class="op">=</span>MLPClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> { <span class="co"># grid search space</span></span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'hidden_layer_sizes'</span>: [(<span class="dv">50</span>,<span class="dv">30</span>,<span class="dv">30</span>)],</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_iter'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>],</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'activation'</span>: [<span class="st">'tanh'</span>, <span class="st">'relu'</span>],</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'solver'</span>: [<span class="st">'sgd'</span>, <span class="st">'adam'</span>],</span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'alpha'</span>: [<span class="fl">0.01</span>, <span class="fl">0.05</span>,<span class="fl">0.001</span>],</span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: [<span class="st">'constant'</span>,<span class="st">'adaptive'</span>],</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>CV_nnm <span class="op">=</span> GridSearchCV(nnm, param_grid, n_jobs<span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, cv<span class="op">=</span><span class="dv">5</span>) <span class="co"># cross validation</span></span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>CV_nnm.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model using train set</span></span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_nnm.best_params_ <span class="co"># best hyperparameters</span></span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>, best_params_)</span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>nnm<span class="op">=</span>MLPClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with best hyperprameters</span></span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>                   hidden_layer_sizes<span class="op">=</span>CV_nnm.best_estimator_.hidden_layer_sizes,</span>
-<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>                   activation<span class="op">=</span>CV_nnm.best_estimator_.activation,</span>
-<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>                   solver<span class="op">=</span>CV_nnm.best_estimator_.solver,</span>
-<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>                   max_iter<span class="op">=</span>CV_nnm.best_estimator_.max_iter)</span>
-<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>nnm.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model with train set</span></span>
-<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>nnm.predict(xtest) <span class="co"># predict test target value</span></span>
-<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from Neural Network Model"</span>)</span>
-<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>accuracy_score(ytest,pred) <span class="co"># accuracy</span></span>
-<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>nnm<span class="op">=</span>MLPClassifier(random_state<span class="op">=</span><span class="dv">123</span>) <span class="co"># train model</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> { <span class="co"># grid search space</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'hidden_layer_sizes'</span>: [(<span class="dv">50</span>,<span class="dv">30</span>,<span class="dv">30</span>)],</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_iter'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>],</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'activation'</span>: [<span class="st">'tanh'</span>, <span class="st">'relu'</span>],</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'solver'</span>: [<span class="st">'sgd'</span>, <span class="st">'adam'</span>],</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'alpha'</span>: [<span class="fl">0.01</span>, <span class="fl">0.05</span>,<span class="fl">0.001</span>],</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: [<span class="st">'constant'</span>,<span class="st">'adaptive'</span>],</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"HyperParameter Search Space: </span><span class="ch">\n</span><span class="st">"</span>,param_grid)</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>CV_nnm <span class="op">=</span> GridSearchCV(nnm, param_grid, n_jobs<span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, cv<span class="op">=</span><span class="dv">5</span>) <span class="co"># cross validation</span></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>CV_nnm.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model using train set</span></span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>best_params_<span class="op">=</span>CV_nnm.best_params_ <span class="co"># best hyperparameters</span></span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Hyperparameter Choosen: </span><span class="ch">\n</span><span class="st">"</span>, best_params_)</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>nnm<span class="op">=</span>MLPClassifier(random_state<span class="op">=</span><span class="dv">42</span>,  <span class="co"># train model with best hyperprameters</span></span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>                   hidden_layer_sizes<span class="op">=</span>CV_nnm.best_estimator_.hidden_layer_sizes,</span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>                   activation<span class="op">=</span>CV_nnm.best_estimator_.activation,</span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>                   solver<span class="op">=</span>CV_nnm.best_estimator_.solver,</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>                   max_iter<span class="op">=</span>CV_nnm.best_estimator_.max_iter)</span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>nnm.fit(xtrain, ytrain.values.ravel()) <span class="co"># train model with train set</span></span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>pred<span class="op">=</span>nnm.predict(xtest) <span class="co"># predict test target value</span></span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy of Test Dataset from Neural Network Model: </span><span class="ch">\n</span><span class="st">"</span>, accuracy_score(ytest,pred))</span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a> <span class="co"># accuracy</span></span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
-
-Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
-
-C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
-
-Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
-</code></pre>
-</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Best Hyperparameter Choosen: 
+<pre><code>HyperParameter Search Space: 
+ {'hidden_layer_sizes': [(50, 30, 30)], 'max_iter': [1, 3, 5], 'activation': ['tanh', 'relu'], 'solver': ['sgd', 'adam'], 'alpha': [0.01, 0.05, 0.001], 'learning_rate': ['constant', 'adaptive']}
+Best Hyperparameter Choosen: 
  {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (50, 30, 30), 'learning_rate': 'constant', 'max_iter': 5, 'solver': 'adam'}
-Accuracy of Test Dataset from Neural Network Model</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="32">
-<pre><code>0.8719885205044936</code></pre>
+Accuracy of Test Dataset from Neural Network Model: 
+ 0.8719885205044936</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
+<p>For each models you can see the grid of hyperparameters we searched and optimal hyperparameter in that space and Accuracy of the model on testing data set. Prediction results of the models shows that Random Forest and Neural Network Models accuracy is similiar around 87% and AdaBoost’s accuracy was lower, 84% compared to the other 2 models.</p>
 </section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In this project, we used 3 machine learning approaches to construct a credit scoring model and determine which model provides better prediction for credit scores. To uphold transparency, we detailed every steps we taken for data preprocessing. To identify relevant features to our model, we employed correlation coefficient for numeric variable, and ANOVA for categorical variables to determine relationships and associations. Lastly we employed Random Forest, Adaboost, Neural Network models. We specified the hyperparameters so that other researchers can replicate our model. Based on the model prediction, Random Forest and Neural Networking model was equally good for credit scoring. Adaboost was least predictive out of the 3 models.</p>
 </section>
 
 </main>

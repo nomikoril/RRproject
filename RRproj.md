@@ -116,7 +116,7 @@ credit_score.head()
 ```
 :::
 
-::: {.cell-output .cell-output-display execution_count=2}
+::: {.cell-output .cell-output-display execution_count=34}
 
 ```{=html}
 <div>
@@ -324,7 +324,7 @@ credit_score.isna().sum()
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=4}
+::: {.cell-output .cell-output-display execution_count=36}
 ```
 Customer_ID                    0
 Month                          0
@@ -373,7 +373,7 @@ print("Number of month: ", num_month)
 ::: {.cell-output .cell-output-stdout}
 ```
 Number of unique customer:  8692
-Number of month:  {'August', 'January', 'February', 'July', 'May', 'April', 'June', 'March'}
+Number of month:  {'May', 'August', 'June', 'April', 'March', 'July', 'January', 'February'}
 ```
 :::
 :::
@@ -389,7 +389,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occ
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=6}
+::: {.cell-output .cell-output-display execution_count=38}
 ```
 Customer_ID
 CUS_0x2dbc    [nan, Engineer, nan, Engineer, nan, Engineer]
@@ -411,7 +411,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x2dbc'].groupby('Customer_ID')['Occ
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=7}
+::: {.cell-output .cell-output-display execution_count=39}
 ```
 Customer_ID
 CUS_0x2dbc    [Engineer, Engineer, Engineer, Engineer, Engin...
@@ -447,7 +447,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=9}
+::: {.cell-output .cell-output-display execution_count=41}
 ```
 Customer_ID
 CUS_0x1018    [22, 22, 22, 20, nan, 22, 22, 22]
@@ -469,7 +469,7 @@ credit_score[credit_score.Customer_ID=='CUS_0x1018'].groupby('Customer_ID')['Num
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=10}
+::: {.cell-output .cell-output-display execution_count=42}
 ```
 Customer_ID
 CUS_0x1018    [22, 22, 22, 20, 21.714285714285715, 22, 22, 22]
@@ -505,7 +505,7 @@ credit_score.isna().sum()
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=12}
+::: {.cell-output .cell-output-display execution_count=44}
 ```
 Customer_ID                  0
 Month                        0
@@ -595,7 +595,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-15-output-1.png){}
+![](RRproj_files/figure-html/cell-15-output-1.png){width=826 height=803}
 :::
 :::
 
@@ -642,7 +642,7 @@ Outlier band of Age : -3.0 ; 69.0
 :::
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-17-output-2.png){}
+![](RRproj_files/figure-html/cell-17-output-2.png){width=583 height=404}
 :::
 :::
 
@@ -760,7 +760,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-20-output-1.png){}
+![](RRproj_files/figure-html/cell-20-output-1.png){width=1142 height=1142}
 :::
 :::
 
@@ -862,7 +862,7 @@ credit_score.head()
 ```
 :::
 
-::: {.cell-output .cell-output-display execution_count=22}
+::: {.cell-output .cell-output-display execution_count=54}
 
 ```{=html}
 <div>
@@ -1084,7 +1084,7 @@ plt.show()
 ````
 
 ::: {.cell-output .cell-output-display}
-![](RRproj_files/figure-html/cell-25-output-1.png){}
+![](RRproj_files/figure-html/cell-25-output-1.png){width=684 height=510}
 :::
 :::
 
@@ -1128,8 +1128,8 @@ debt_consolidation          0.193754
 home_equity                 0.191103
 student                     0.188193
 not_specified               0.178540
-Spent                       0.144134
-Payment                     0.131775
+Spent                       0.144263
+Payment                     0.132471
 Total_EMI_per_month         0.114227
 Month                      -0.023726
 Credit_Utilization_Ratio   -0.060603
@@ -1173,7 +1173,7 @@ anova.sort_values(by="Chisq",ascending=False)
 
 ````
 
-::: {.cell-output .cell-output-display execution_count=26}
+::: {.cell-output .cell-output-display execution_count=58}
 
 ```{=html}
 <div>
@@ -1285,14 +1285,18 @@ def evaluate(model, test_features, test_labels):
 :::
 
 
-### Models tabset
+### Model Estimation
 ::: {.panel-tabset}
+
+For each models you can see the grid of hyperparameters we searched and optimal hyperparameter in that space and Accuracy of the model on testing data set.
+Prediction results of the models shows that Random Forest and Neural Network Models accuracy is similiar around 87% and AdaBoost's accuracy was lower, 84% compared to the other 2 models.
 
 #### Random Forest Model
 
 ::: {.cell execution_count=30}
 ```` { .cell-code}
 ```{{python}}
+#| warning: false
 rfc=RandomForestClassifier(random_state=123) # train model
 param_grid = {  # grid search space
     'n_estimators': [10, 20],
@@ -1300,10 +1304,14 @@ param_grid = {  # grid search space
     'max_depth' : [3,6],
     'criterion' :['gini', 'entropy']
 }
+print("HyperParameter Search Space: \n",param_grid)
+
 CV_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv= 5) # cross validtion
 CV_rfc.fit(xtrain, ytrain) # train model using train set
 best_params_=CV_rfc.best_params_ # best hyperparameters
-print("Best Hyperparameter Choosen: \n",best_params_)
+
+print("Optimal Hyperparameter Choosen: \n", best_params_)
+
 rfc1=RandomForestClassifier(random_state=42,  # train model with hyperparameters
                             max_features=CV_rfc.best_estimator_.max_features,
                             n_estimators= CV_rfc.best_estimator_.n_estimators, 
@@ -1312,23 +1320,20 @@ rfc1=RandomForestClassifier(random_state=42,  # train model with hyperparameters
 rfc1.fit(xtrain, ytrain.values.ravel()) # train model with train set
 pred=rfc1.predict(xtest) # predict test target value
 
-print("Accuracy of Test Dataset from Random Forest Model")
-accuracy_score(ytest,pred) # accuracy
+print("Accuracy of Test Dataset from Random Forest Model: \n", accuracy_score(ytest,pred))
+#accuracy_score(ytest,pred) # accuracy
 ```
 
 ````
 
 ::: {.cell-output .cell-output-stdout}
 ```
-Best Hyperparameter Choosen: 
+HyperParameter Search Space: 
+ {'n_estimators': [10, 20], 'max_features': ['sqrt', 'log2'], 'max_depth': [3, 6], 'criterion': ['gini', 'entropy']}
+Optimal Hyperparameter Choosen: 
  {'criterion': 'gini', 'max_depth': 6, 'max_features': 'sqrt', 'n_estimators': 20}
-Accuracy of Test Dataset from Random Forest Model
-```
-:::
-
-::: {.cell-output .cell-output-display execution_count=30}
-```
-0.870855675553206
+Accuracy of Test Dataset from Random Forest Model: 
+ 0.8691186466278982
 ```
 :::
 :::
@@ -1339,11 +1344,14 @@ Accuracy of Test Dataset from Random Forest Model
 ::: {.cell execution_count=31}
 ```` { .cell-code}
 ```{{python}}
+#| warning: false
 adb=AdaBoostClassifier(random_state=123) # train model
 param_grid = {  # grid search space
     'n_estimators': [10, 20,30],
     'learning_rate': [0.01,0.1]
 }
+print("HyperParameter Search Space: \n",param_grid)
+
 CV_adb = GridSearchCV(estimator=adb, param_grid=param_grid, cv= 5) # cross validation
 CV_adb.fit(xtrain, ytrain.values.ravel()) # train model using train set
 best_params_=CV_adb.best_params_ # best hyperparameters
@@ -1353,23 +1361,20 @@ adb=AdaBoostClassifier(random_state=42,  # train model with hyperparameters
                             n_estimators= CV_adb.best_estimator_.n_estimators)
 adb.fit(xtrain, ytrain.values.ravel()) # train mdel with train set
 pred=adb.predict(xtest) # predict test target value
-print("Accuracy of Test Dataset from AdaBoost Model")
-accuracy_score(ytest,pred) # accuracy
+print("Accuracy of Test Dataset from AdaBoost Model: \n", accuracy_score(ytest,pred))
+ # accuracy
 ```
 
 ````
 
 ::: {.cell-output .cell-output-stdout}
 ```
+HyperParameter Search Space: 
+ {'n_estimators': [10, 20, 30], 'learning_rate': [0.01, 0.1]}
 Best Hyperparameter Choosen: 
  {'learning_rate': 0.1, 'n_estimators': 30}
-Accuracy of Test Dataset from AdaBoost Model
-```
-:::
-
-::: {.cell-output .cell-output-display execution_count=31}
-```
-0.8434408277320444
+Accuracy of Test Dataset from AdaBoost Model: 
+ 0.8434408277320444
 ```
 :::
 :::
@@ -1380,6 +1385,7 @@ Accuracy of Test Dataset from AdaBoost Model
 ::: {.cell execution_count=32}
 ```` { .cell-code}
 ```{{python}}
+#| warning: false
 nnm=MLPClassifier(random_state=123) # train model
 param_grid = { # grid search space
     'hidden_layer_sizes': [(50,30,30)],
@@ -1389,6 +1395,8 @@ param_grid = { # grid search space
     'alpha': [0.01, 0.05,0.001],
     'learning_rate': ['constant','adaptive'],
 }
+print("HyperParameter Search Space: \n",param_grid)
+
 CV_nnm = GridSearchCV(nnm, param_grid, n_jobs= -1, cv=5) # cross validation
 CV_nnm.fit(xtrain, ytrain.values.ravel()) # train model using train set
 best_params_=CV_nnm.best_params_ # best hyperparameters
@@ -1400,40 +1408,31 @@ nnm=MLPClassifier(random_state=42,  # train model with best hyperprameters
                    max_iter=CV_nnm.best_estimator_.max_iter)
 nnm.fit(xtrain, ytrain.values.ravel()) # train model with train set
 pred=nnm.predict(xtest) # predict test target value
-print("Accuracy of Test Dataset from Neural Network Model")
-accuracy_score(ytest,pred) # accuracy
+print("Accuracy of Test Dataset from Neural Network Model: \n", accuracy_score(ytest,pred))
+ # accuracy
 ```
 
 ````
 
-::: {.cell-output .cell-output-stderr}
-```
-C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
-
-Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
-
-C:\Users\nomin\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\neural_network\_multilayer_perceptron.py:702: ConvergenceWarning:
-
-Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
-
-```
-:::
-
 ::: {.cell-output .cell-output-stdout}
 ```
+HyperParameter Search Space: 
+ {'hidden_layer_sizes': [(50, 30, 30)], 'max_iter': [1, 3, 5], 'activation': ['tanh', 'relu'], 'solver': ['sgd', 'adam'], 'alpha': [0.01, 0.05, 0.001], 'learning_rate': ['constant', 'adaptive']}
 Best Hyperparameter Choosen: 
  {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (50, 30, 30), 'learning_rate': 'constant', 'max_iter': 5, 'solver': 'adam'}
-Accuracy of Test Dataset from Neural Network Model
-```
-:::
-
-::: {.cell-output .cell-output-display execution_count=32}
-```
-0.8719885205044936
+Accuracy of Test Dataset from Neural Network Model: 
+ 0.8719885205044936
 ```
 :::
 :::
 
 
 :::
+
+For each models you can see the grid of hyperparameters we searched and optimal hyperparameter in that space and Accuracy of the model on testing data set.
+Prediction results of the models shows that Random Forest and Neural Network Models accuracy is similiar around 87% and AdaBoost's accuracy was lower, 84% compared to the other 2 models.
+
+## Conclusion
+
+In this project, we used 3 machine learning approaches to construct a credit scoring model and determine which model provides better prediction for credit scores. To uphold transparency, we detailed every steps we taken for data preprocessing. To identify relevant features to our model, we employed correlation coefficient for numeric variable, and ANOVA for categorical variables to determine relationships and associations. Lastly we employed Random Forest, Adaboost, Neural Network models. We specified the hyperparameters so that other researchers can replicate our model. Based on the model prediction, Random Forest and Neural Networking model was equally good for credit scoring. Adaboost was least predictive out of the 3 models. 
 

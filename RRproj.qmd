@@ -514,6 +514,7 @@ def evaluate(model, test_features, test_labels):
 
 ### Model Estimation
 ::: {.panel-tabset}
+
 For each models you can see the grid of hyperparameters we searched and optimal hyperparameter in that space and Accuracy of the model on testing data set.
 Prediction results of the models shows that Random Forest and Neural Network Models accuracy is similiar around 87% and AdaBoost's accuracy was lower, 84% compared to the other 2 models.
 
@@ -602,6 +603,9 @@ print("Accuracy of Test Dataset from Neural Network Model: \n", accuracy_score(y
  # accuracy
 ```
 :::
+
+For each models you can see the grid of hyperparameters we searched and optimal hyperparameter in that space and Accuracy of the model on testing data set.
+Prediction results of the models shows that Random Forest and Neural Network Models accuracy is similiar around 87% and AdaBoost's accuracy was lower, 84% compared to the other 2 models.
 
 ## Conclusion
 
